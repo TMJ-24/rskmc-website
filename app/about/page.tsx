@@ -1,9 +1,13 @@
-import { Eye, Target, Cross, BookOpen, Heart, Users, Globe, Music } from "lucide-react";
+"use client";
 
-export const metadata = {
-  title: "About | RSKMC",
-  description: "Learn about the history, vision, mission, and leadership of Rev Sione Kami Memorial Church.",
-};
+import { useEffect, useState } from "react";
+import { generateClient } from "aws-amplify/data";
+import type { Schema } from "@/amplify/data/resource";
+import { Eye, Target, Cross, BookOpen, Heart, Users, Globe, Music } from "lucide-react";
+import Image from "next/image";
+
+const client = generateClient<Schema>();
+type Leader = Schema["Leader"]["type"];
 
 const coreValues = [
   { Icon: Cross, title: "Christ-Centered", desc: "Jesus is at the centre of everything we do" },
@@ -14,16 +18,42 @@ const coreValues = [
   { Icon: Music, title: "Worship", desc: "Worship is our first priority and highest calling" },
 ];
 
-const leadership = [
-  { name: "Pastor John Kami", role: "Senior Pastor", initials: "JK" },
-  { name: "Elder Samuel Vatu", role: "Board Elder", initials: "SV" },
-  { name: "Deaconess Mary Tora", role: "Women's Ministry", initials: "MT" },
-  { name: "Deacon Peter Rosi", role: "Outreach Ministry", initials: "PR" },
-  { name: "Sis. Grace Kami", role: "Youth Ministry", initials: "GK" },
-  { name: "Bro. David Lewa", role: "Worship Ministry", initials: "DL" },
+const staticLeaders = [
+  { id: "1", name: "Pastor John Kami", role: "Senior Pastor", bio: null, imageUrl: null, order: 1, published: true },
+  { id: "2", name: "Elder Samuel Vatu", role: "Board Elder", bio: null, imageUrl: null, order: 2, published: true },
+  { id: "3", name: "Deaconess Mary Tora", role: "Women's Ministry", bio: null, imageUrl: null, order: 3, published: true },
+  { id: "4", name: "Deacon Peter Rosi", role: "Outreach Ministry", bio: null, imageUrl: null, order: 4, published: true },
+  { id: "5", name: "Sis. Grace Kami", role: "Youth Ministry", bio: null, imageUrl: null, order: 5, published: true },
+  { id: "6", name: "Bro. David Lewa", role: "Worship Ministry", bio: null, imageUrl: null, order: 6, published: true },
 ];
 
+function initials(name: string) {
+  return name.split(" ").map((w) => w[0]).slice(0, 2).join("");
+}
+
 export default function About() {
+  const [leaders, setLeaders] = useState<Leader[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await client.models.Leader.list();
+        const published = res.data.filter((l) => l.published !== false);
+        setLeaders(
+          published.length > 0
+            ? [...published].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+            : (staticLeaders as unknown as Leader[])
+        );
+      } catch {
+        setLeaders(staticLeaders as unknown as Leader[]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
   return (
     <div>
       {/* Hero */}
@@ -111,17 +141,28 @@ export default function About() {
       <section className="bg-navy-700 text-white py-20 px-4">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">Our Leadership</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8">
-            {leadership.map((person, i) => (
-              <div key={i} className="text-center">
-                <div className="w-16 h-16 bg-gold-500 text-navy-800 rounded-full flex items-center justify-center font-bold text-lg mx-auto mb-3">
-                  {person.initials}
+          {loading ? (
+            <div className="text-center text-blue-300">Loading...</div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+              {leaders.map((person) => (
+                <div key={person.id} className="text-center">
+                  {person.imageUrl ? (
+                    <div className="w-16 h-16 rounded-full mx-auto mb-3 overflow-hidden relative">
+                      <Image src={person.imageUrl} alt={person.name} fill className="object-cover" />
+                    </div>
+                  ) : (
+                    <div className="w-16 h-16 bg-gold-500 text-navy-800 rounded-full flex items-center justify-center font-bold text-lg mx-auto mb-3">
+                      {initials(person.name)}
+                    </div>
+                  )}
+                  <h3 className="font-bold text-white text-sm">{person.name}</h3>
+                  <p className="text-blue-300 text-xs mt-1">{person.role}</p>
+                  {person.bio && <p className="text-blue-400 text-xs mt-1 line-clamp-2">{person.bio}</p>}
                 </div>
-                <h3 className="font-bold text-white text-sm">{person.name}</h3>
-                <p className="text-blue-300 text-xs mt-1">{person.role}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>

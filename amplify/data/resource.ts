@@ -65,6 +65,51 @@ const schema = a.schema({
       allow.publicApiKey().to(["read"]),
       allow.authenticated().to(["create", "read", "update", "delete"]),
     ]),
+
+  Ministry: a
+    .model({
+      name:       a.string().required(),
+      commission: a.string().required(),
+      tagline:    a.string().required(),
+      description: a.string().required(),
+      fellowship: a.string().required(),
+      icon:       a.string().required(),
+      order:      a.integer().required(),
+      published:  a.boolean(),
+    })
+    .authorization((allow) => [
+      allow.publicApiKey().to(["read"]),
+      allow.authenticated().to(["create", "read", "update", "delete"]),
+    ]),
+
+  Leader: a
+    .model({
+      name:      a.string().required(),
+      role:      a.string().required(),
+      bio:       a.string(),
+      imageUrl:  a.string(),
+      order:     a.integer().required(),
+      published: a.boolean(),
+    })
+    .authorization((allow) => [
+      allow.publicApiKey().to(["read"]),
+      allow.authenticated().to(["create", "read", "update", "delete"]),
+    ]),
+
+  ServiceTime: a
+    .model({
+      day:         a.string().required(),
+      time:        a.string().required(),
+      name:        a.string().required(),
+      description: a.string(),
+      duration:    a.string(),
+      order:       a.integer().required(),
+      published:   a.boolean(),
+    })
+    .authorization((allow) => [
+      allow.publicApiKey().to(["read"]),
+      allow.authenticated().to(["create", "read", "update", "delete"]),
+    ]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
