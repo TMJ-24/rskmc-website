@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "@/amplify/data/resource";
 
@@ -107,7 +107,7 @@ export default function HeroSlider() {
   }, [current, next]);
 
   return (
-    <section className="relative h-[92vh] min-h-[560px] max-h-[900px] overflow-hidden bg-navy-900">
+    <section className="relative h-[88vh] min-h-[580px] max-h-[920px] overflow-hidden bg-navy-900">
 
       {/* Slides */}
       {slides.map((slide, i) => (
@@ -122,72 +122,88 @@ export default function HeroSlider() {
             src={slide.src}
             alt={slide.eyebrow}
             fill
-            className="object-cover"
+            className="object-cover scale-105"
             priority={i === 0}
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-navy-900/60 via-navy-900/50 to-navy-900/80" />
+          {/* Stronger left-leaning gradient for readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-navy-900/90 via-navy-900/60 to-navy-900/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-navy-900/70 via-transparent to-transparent" />
         </div>
       ))}
 
-      {/* Text content */}
-      <div className="relative z-20 h-full flex flex-col items-center justify-center text-center px-4">
-        {slides.map((slide, i) => (
-          <div
-            key={i}
-            className={`absolute inset-0 flex flex-col items-center justify-center px-4 transition-all duration-700 ease-in-out ${
-              i === current
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4 pointer-events-none"
-            }`}
-          >
-            <p className="text-gold-400 uppercase tracking-widest text-xs sm:text-sm font-semibold mb-4">
-              {slide.eyebrow}
-            </p>
-            <h1 className="text-white text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-5 drop-shadow-lg">
-              {slide.heading[0]}
-              <br />
-              {slide.heading[1]}
-            </h1>
-            <p className="text-blue-100 text-base sm:text-lg max-w-xl mb-8 drop-shadow">
-              {slide.sub}
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link
-                href={slide.primary.href}
-                className="bg-gold-500 text-navy-800 font-bold px-8 py-3 rounded-full hover:bg-gold-400 transition-colors"
-              >
-                {slide.primary.label}
-              </Link>
-              <Link
-                href={slide.secondary.href}
-                className="border-2 border-white text-white px-8 py-3 rounded-full hover:bg-white hover:text-navy-700 transition-colors"
-              >
-                {slide.secondary.label}
-              </Link>
+      {/* Text content — left-aligned, full-width container */}
+      <div className="relative z-20 h-full flex flex-col justify-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          {slides.map((slide, i) => (
+            <div
+              key={i}
+              className={`transition-all duration-700 ease-in-out ${
+                i === current
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-6 pointer-events-none absolute"
+              }`}
+            >
+              {/* Eyebrow with decorative line */}
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-0.5 bg-gold-500" />
+                <p className="text-gold-400 uppercase tracking-widest text-xs sm:text-sm font-semibold">
+                  {slide.eyebrow}
+                </p>
+              </div>
+
+              <h1 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-5 drop-shadow-lg max-w-3xl">
+                {slide.heading[0]}
+                <br />
+                <span className="text-gold-400">{slide.heading[1]}</span>
+              </h1>
+
+              <p className="text-blue-100 text-base sm:text-lg md:text-xl max-w-xl mb-8 drop-shadow leading-relaxed">
+                {slide.sub}
+              </p>
+
+              <div className="flex flex-wrap gap-4">
+                <Link
+                  href={slide.primary.href}
+                  className="bg-gold-500 text-navy-800 font-bold px-8 py-3.5 rounded-lg hover:bg-gold-400 transition-colors text-sm sm:text-base"
+                >
+                  {slide.primary.label}
+                </Link>
+                <Link
+                  href={slide.secondary.href}
+                  className="border-2 border-white/70 text-white px-8 py-3.5 rounded-lg hover:bg-white hover:text-navy-700 transition-colors text-sm sm:text-base backdrop-blur-sm"
+                >
+                  {slide.secondary.label}
+                </Link>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
-      {/* Prev / Next arrows */}
-      <button
-        onClick={prev}
-        aria-label="Previous slide"
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 border border-white/30 flex items-center justify-center text-white transition-colors backdrop-blur-sm"
-      >
-        <ChevronLeft size={20} />
-      </button>
-      <button
-        onClick={next}
-        aria-label="Next slide"
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-white/20 hover:bg-white/40 border border-white/30 flex items-center justify-center text-white transition-colors backdrop-blur-sm"
-      >
-        <ChevronRight size={20} />
-      </button>
+      {/* Slide counter + Prev / Next arrows — right side */}
+      <div className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center gap-3">
+        <button
+          onClick={prev}
+          aria-label="Previous slide"
+          className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/35 border border-white/25 flex items-center justify-center text-white transition-colors backdrop-blur-sm"
+        >
+          <ChevronLeft size={20} />
+        </button>
+        <span className="text-white/60 text-xs font-mono tabular-nums">
+          {String(current + 1).padStart(2, "0")}/{String(slides.length).padStart(2, "0")}
+        </span>
+        <button
+          onClick={next}
+          aria-label="Next slide"
+          className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/35 border border-white/25 flex items-center justify-center text-white transition-colors backdrop-blur-sm"
+        >
+          <ChevronRight size={20} />
+        </button>
+      </div>
 
       {/* Dot navigation */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
         {slides.map((_, i) => (
           <button
             key={i}
@@ -195,11 +211,17 @@ export default function HeroSlider() {
             aria-label={`Go to slide ${i + 1}`}
             className={`rounded-full transition-all duration-300 ${
               i === current
-                ? "w-7 h-2.5 bg-gold-500"
-                : "w-2.5 h-2.5 bg-white/50 hover:bg-white/80"
+                ? "w-8 h-2 bg-gold-500"
+                : "w-2 h-2 bg-white/40 hover:bg-white/70"
             }`}
           />
         ))}
+      </div>
+
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 hidden md:flex flex-col items-center gap-1 text-white/40">
+        <span className="text-xs tracking-widest uppercase">Scroll</span>
+        <ChevronDown size={16} className="animate-bounce" />
       </div>
 
       {/* Progress bar */}

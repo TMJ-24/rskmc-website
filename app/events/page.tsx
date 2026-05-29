@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "@/amplify/data/resource";
 import { Clock, MapPin } from "lucide-react";
+import Breadcrumb from "@/components/Breadcrumb";
+import Image from "next/image";
+import Link from "next/link";
 
 const client = generateClient<Schema>();
 type Event = Schema["Event"]["type"];
@@ -51,70 +54,83 @@ export default function Events() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-navy-700 text-white py-24 px-4 text-center">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">Events</h1>
-        <p className="text-blue-200 text-xl max-w-2xl mx-auto">
-          Stay connected with what&apos;s happening at RSKMC.
-        </p>
+      <section className="relative bg-navy-700 text-white py-16 md:py-24 overflow-hidden">
+        <div className="absolute inset-0">
+          <Image src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1920&q=75" alt="" fill className="object-cover opacity-20" priority />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Breadcrumb items={[{ label: "Events" }]} />
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4">Events</h1>
+          <p className="text-blue-200 text-base md:text-xl max-w-2xl">
+            Stay connected with what&apos;s happening at RSKMC.
+          </p>
+        </div>
       </section>
 
       {/* Events List */}
-      <section className="py-20 px-4 max-w-5xl mx-auto">
-        {loading ? (
-          <div className="text-center text-gray-400 py-20">Loading events...</div>
-        ) : (
-          <div className="grid gap-5">
-            {events.map((event) => (
-              <div
-                key={event.id}
-                className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow flex flex-col sm:flex-row"
-              >
-                <div className="bg-navy-700 text-white flex flex-col items-center justify-center w-full sm:w-24 py-4 sm:py-0 shrink-0">
-                  <span className="text-3xl font-bold text-gold-400 leading-none">{event.day}</span>
-                  <span className="text-xs uppercase tracking-wider text-blue-300 mt-1">{event.month}</span>
-                </div>
-                <div className="p-6 flex-1">
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                        categoryStyles[event.category] ?? "bg-gray-100 text-gray-600"
-                      }`}
-                    >
-                      {event.category}
-                    </span>
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-xs font-semibold uppercase tracking-widest text-gold-600 mb-3 flex items-center gap-2">
+            <span className="inline-block w-6 h-px bg-gold-500" />
+            Calendar
+          </p>
+          <h2 className="text-3xl font-bold text-navy-700 mb-10">Upcoming Events</h2>
+          {loading ? (
+            <div className="text-center text-gray-400 py-20">Loading events...</div>
+          ) : (
+            <div className="grid gap-4">
+              {events.map((event) => (
+                <div
+                  key={event.id}
+                  className="group bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-gold-300 hover:-translate-y-0.5 transition-all duration-300 flex flex-col sm:flex-row"
+                >
+                  <div className="bg-navy-700 text-white flex flex-col items-center justify-center w-full sm:w-24 py-4 sm:py-0 shrink-0 group-hover:bg-navy-600 transition-colors duration-300">
+                    <span className="text-3xl font-bold text-gold-400 leading-none">{event.day}</span>
+                    <span className="text-xs uppercase tracking-wider text-blue-300 mt-1">{event.month}</span>
                   </div>
-                  <h3 className="font-bold text-navy-700 text-xl mb-2">{event.title}</h3>
-                  <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-2">
-                    <span className="flex items-center gap-1">
-                      <Clock size={14} className="text-gold-600" />
-                      {event.time}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <MapPin size={14} className="text-gold-600" />
-                      {event.location}
-                    </span>
+                  <div className="p-6 flex-1">
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                          categoryStyles[event.category] ?? "bg-gray-100 text-gray-600"
+                        }`}
+                      >
+                        {event.category}
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-navy-700 text-xl mb-2">{event.title}</h3>
+                    <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-2">
+                      <span className="flex items-center gap-1">
+                        <Clock size={14} className="text-gold-600" />
+                        {event.time}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <MapPin size={14} className="text-gold-600" />
+                        {event.location}
+                      </span>
+                    </div>
+                    <p className="text-gray-600 text-sm leading-relaxed">{event.description}</p>
                   </div>
-                  <p className="text-gray-600 text-sm leading-relaxed">{event.description}</p>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
       </section>
 
       {/* Get Involved CTA */}
-      <section className="bg-gold-500 py-14 px-4 text-center">
-        <div className="max-w-2xl mx-auto">
+      <section className="bg-gold-500 py-14">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-bold text-navy-800 mb-2">Want to Get Involved?</h2>
           <p className="text-navy-700 mb-6">
             Contact us to volunteer, register for an event, or suggest a ministry activity.
           </p>
-          <a
+          <Link
             href="/give"
-            className="bg-navy-700 text-white font-bold px-8 py-3 rounded-full hover:bg-navy-800 transition-colors"
+            className="bg-navy-700 text-white font-bold px-8 py-3 rounded-lg hover:bg-navy-800 active:scale-95 transition-all duration-200 inline-block"
           >
             Contact Us
-          </a>
+          </Link>
         </div>
       </section>
     </div>

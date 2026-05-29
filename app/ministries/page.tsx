@@ -7,6 +7,9 @@ import {
   Music, BookOpen, Globe, Heart, Mic, Sparkles,
   ShieldCheck, Coins, Handshake, Tv, UserCheck, Flame, Users, LucideIcon,
 } from "lucide-react";
+import Breadcrumb from "@/components/Breadcrumb";
+import Image from "next/image";
+import Link from "next/link";
 
 const client = generateClient<Schema>();
 type Ministry = Schema["Ministry"]["type"];
@@ -75,7 +78,6 @@ export default function Ministries() {
     return acc;
   }, {});
 
-  // Also catch any commissions not in the order list
   ministries.forEach((m) => {
     if (!COMMISSION_ORDER.includes(m.commission) && !grouped[m.commission]) {
       grouped[m.commission] = [];
@@ -88,79 +90,105 @@ export default function Ministries() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-navy-700 text-white py-24 px-4 text-center">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">Our Ministries</h1>
-        <p className="text-blue-200 text-xl max-w-2xl mx-auto">
-          Every member of RSKMC is called to serve. Find where you belong.
-        </p>
+      <section className="relative bg-navy-700 text-white py-16 md:py-24 overflow-hidden">
+        <div className="absolute inset-0">
+          <Image src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1920&q=75" alt="" fill className="object-cover opacity-20" priority />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Breadcrumb items={[{ label: "Ministries" }]} />
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4">Our Ministries</h1>
+          <p className="text-blue-200 text-base md:text-xl max-w-2xl">
+            Every member of RSKMC is called to serve. Find where you belong.
+          </p>
+        </div>
       </section>
 
       {/* Intro */}
-      <section className="py-16 px-4 max-w-3xl mx-auto text-center">
-        <h2 className="text-2xl font-bold text-navy-700 mb-4">Built to Serve, Organised to Thrive</h2>
-        <p className="text-gray-600 leading-relaxed">
-          RSKMC organises its ministries under four Commissions — Worship, Discipleship, Evangelism,
-          and Ministry — each with a clear mandate to build up the body of Christ and reach the world
-          around us. Whether you love music, children, prayer, or serving behind the scenes, there is a
-          place for you here.
-        </p>
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-xs font-semibold uppercase tracking-widest text-gold-600 mb-3 flex items-center gap-2">
+            <span className="inline-block w-6 h-px bg-gold-500" />
+            Structure &amp; Purpose
+          </p>
+          <h2 className="text-2xl font-bold text-navy-700 mb-4">Built to Serve, Organised to Thrive</h2>
+          <p className="text-gray-600 leading-relaxed max-w-3xl">
+            RSKMC organises its ministries under four Commissions — Worship, Discipleship, Evangelism,
+            and Ministry — each with a clear mandate to build up the body of Christ and reach the world
+            around us. Whether you love music, children, prayer, or serving behind the scenes, there is a
+            place for you here.
+          </p>
+        </div>
       </section>
 
       {/* Ministry cards */}
       {loading ? (
         <div className="text-center text-gray-400 py-20">Loading ministries...</div>
       ) : (
-        <div className="pb-24 px-4 max-w-6xl mx-auto space-y-16">
-          {Object.entries(grouped).map(([commission, items]) => {
-            const style = COMMISSION_STYLES[commission] ?? DEFAULT_STYLE;
-            return (
-              <div key={commission}>
-                <div className="flex items-center gap-4 mb-8">
-                  <div className={`${style.color} text-white px-5 py-2 rounded-full text-sm font-bold tracking-wide`}>
-                    {commission}
+        <div className="pb-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+            {Object.entries(grouped).map(([commission, items]) => {
+              const style = COMMISSION_STYLES[commission] ?? DEFAULT_STYLE;
+              return (
+                <div key={commission}>
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className={`${style.color} text-white px-5 py-2 rounded-full text-sm font-bold tracking-wide`}>
+                      {commission}
+                    </div>
+                    <div className="flex-1 h-px bg-gray-200" />
                   </div>
-                  <div className="flex-1 h-px bg-gray-200" />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {items.map((ministry) => {
-                    const Icon = ICON_MAP[ministry.icon] ?? Users;
-                    return (
-                      <div key={ministry.id} className={`bg-white rounded-xl border ${style.border} overflow-hidden hover:shadow-md transition-shadow`}>
-                        <div className={`${style.light} px-6 py-5 flex items-center gap-4`}>
-                          <div className={`${style.color} text-white w-11 h-11 rounded-xl flex items-center justify-center shrink-0`}>
-                            <Icon size={20} />
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {items.map((ministry) => {
+                      const Icon = ICON_MAP[ministry.icon] ?? Users;
+                      return (
+                        <div
+                          key={ministry.id}
+                          className={`group bg-white rounded-xl border ${style.border} overflow-hidden hover:-translate-y-0.5 transition-all duration-300`}
+                        >
+                          <div className={`${style.light} px-6 py-5 flex items-center gap-4`}>
+                            <div className={`${style.color} text-white w-11 h-11 rounded-xl flex items-center justify-center shrink-0`}>
+                              <Icon size={20} />
+                            </div>
+                            <div>
+                              <h3 className="font-bold text-navy-700 text-base leading-tight">{ministry.name}</h3>
+                              <p className={`text-xs font-medium ${style.text} mt-0.5`}>{ministry.tagline}</p>
+                            </div>
                           </div>
-                          <div>
-                            <h3 className="font-bold text-navy-700 text-base leading-tight">{ministry.name}</h3>
-                            <p className={`text-xs font-medium ${style.text} mt-0.5`}>{ministry.tagline}</p>
+                          <div className="px-6 py-5">
+                            <p className="text-gray-600 text-sm leading-relaxed mb-4">{ministry.description}</p>
+                            <div className={`${style.light} border ${style.border} rounded-lg px-4 py-2.5`}>
+                              <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-0.5">Fellowship</p>
+                              <p className={`text-sm font-semibold ${style.text}`}>{ministry.fellowship}</p>
+                            </div>
                           </div>
                         </div>
-                        <div className="px-6 py-5">
-                          <p className="text-gray-600 text-sm leading-relaxed mb-4">{ministry.description}</p>
-                          <div className={`${style.light} border ${style.border} rounded-lg px-4 py-2.5`}>
-                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-0.5">Fellowship</p>
-                            <p className={`text-sm font-semibold ${style.text}`}>{ministry.fellowship}</p>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       )}
 
       {/* Join CTA */}
-      <section className="bg-navy-700 text-white py-16 px-4 text-center">
-        <h2 className="text-2xl font-bold mb-3">Ready to Serve?</h2>
-        <p className="text-blue-200 max-w-xl mx-auto mb-8">
-          Join a ministry and discover the joy of serving God alongside your RSKMC family.
-        </p>
-        <a href="/give" className="bg-gold-500 text-navy-800 font-bold px-10 py-3 rounded-full hover:bg-gold-400 transition-colors">
-          Get Connected
-        </a>
+      <section className="bg-navy-700 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-xs font-semibold uppercase tracking-widest text-gold-400 mb-3 flex items-center gap-2">
+            <span className="inline-block w-6 h-px bg-gold-400" />
+            Take the Next Step
+          </p>
+          <h2 className="text-2xl font-bold mb-3">Ready to Serve?</h2>
+          <p className="text-blue-200 max-w-xl mb-8">
+            Join a ministry and discover the joy of serving God alongside your RSKMC family.
+          </p>
+          <Link
+            href="/give"
+            className="bg-gold-500 text-navy-800 font-bold px-10 py-3 rounded-lg hover:bg-gold-400 active:scale-95 transition-all duration-200 inline-block"
+          >
+            Get Connected
+          </Link>
+        </div>
       </section>
     </div>
   );
