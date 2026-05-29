@@ -53,7 +53,6 @@ const rskTheme = createTheme({
         primary: {
           backgroundColor: { value: "#1e3a8a" },
           color: { value: "#ffffff" },
-          borderRadius: { value: "8px" },
           _hover:  { backgroundColor: { value: "#152c72" } },
           _focus:  { backgroundColor: { value: "#152c72" } },
           _active: { backgroundColor: { value: "#0d1e52" } },
@@ -64,7 +63,6 @@ const rskTheme = createTheme({
         },
       },
       fieldcontrol: {
-        borderRadius: { value: "8px" },
         _focus: {
           borderColor: { value: "#1e3a8a" },
           boxShadow: { value: "0 0 0 2px rgba(30,58,138,0.15)" },
