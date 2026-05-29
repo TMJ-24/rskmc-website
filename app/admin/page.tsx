@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "@/amplify/data/resource";
-import { Mic, CalendarDays, MessageSquare, Image as ImageIcon } from "lucide-react";
+import { Mic, CalendarDays, MessageSquare, Image as ImageIcon, Users, UserRound, Clock } from "lucide-react";
 import Link from "next/link";
 
 const client = generateClient<Schema>();
@@ -13,27 +13,36 @@ interface Stats {
   events: number;
   unreadMessages: number;
   slides: number;
+  ministries: number;
+  leaders: number;
+  serviceTimes: number;
 }
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<Stats>({ sermons: 0, events: 0, unreadMessages: 0, slides: 0 });
+  const [stats, setStats] = useState<Stats>({ sermons: 0, events: 0, unreadMessages: 0, slides: 0, ministries: 0, leaders: 0, serviceTimes: 0 });
   const [recentMessages, setRecentMessages] = useState<Schema["ContactSubmission"]["type"][]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       try {
-        const [sermons, events, messages, slides] = await Promise.all([
+        const [sermons, events, messages, slides, ministries, leaders, serviceTimes] = await Promise.all([
           client.models.Sermon.list(),
           client.models.Event.list(),
           client.models.ContactSubmission.list(),
           client.models.HeroSlide.list(),
+          client.models.Ministry.list(),
+          client.models.Leader.list(),
+          client.models.ServiceTime.list(),
         ]);
         setStats({
           sermons: sermons.data.length,
           events: events.data.length,
           unreadMessages: messages.data.filter((m) => !m.read).length,
           slides: slides.data.length,
+          ministries: ministries.data.length,
+          leaders: leaders.data.length,
+          serviceTimes: serviceTimes.data.length,
         });
         setRecentMessages(
           [...messages.data]
@@ -54,6 +63,9 @@ export default function AdminDashboard() {
     { label: "Events", value: stats.events, Icon: CalendarDays, href: "/admin/events", color: "bg-gold-600" },
     { label: "Unread Messages", value: stats.unreadMessages, Icon: MessageSquare, href: "/admin/contact", color: "bg-red-600" },
     { label: "Hero Slides", value: stats.slides, Icon: ImageIcon, href: "/admin/slides", color: "bg-emerald-600" },
+    { label: "Ministries", value: stats.ministries, Icon: Users, href: "/admin/ministries", color: "bg-purple-600" },
+    { label: "Leaders", value: stats.leaders, Icon: UserRound, href: "/admin/leaders", color: "bg-blue-600" },
+    { label: "Service Times", value: stats.serviceTimes, Icon: Clock, href: "/admin/services", color: "bg-teal-600" },
   ];
 
   return (
@@ -61,7 +73,7 @@ export default function AdminDashboard() {
       <h1 className="text-2xl font-bold text-navy-700 mb-2">Dashboard</h1>
       <p className="text-gray-500 text-sm mb-8">Overview of your church website content</p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-6 mb-10">
         {cards.map(({ label, value, Icon, href, color }) => (
           <Link
             key={label}
