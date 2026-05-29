@@ -1,15 +1,17 @@
-import { Landmark, Heart, Building2, Globe, Baby, GraduationCap, Utensils, MapPin, Phone, Mail, Clock, Video, Share2 } from "lucide-react";
+"use client";
 
-export const metadata = {
-  title: "Give & Contact | RSKMC",
-  description: "Support the ministry of Rev Sione Kami Memorial Church or get in touch with us.",
-};
+import { useState } from "react";
+import { generateClient } from "aws-amplify/data";
+import type { Schema } from "@/amplify/data/resource";
+import { Landmark, Heart, Building2, Globe, Baby, GraduationCap, Utensils, MapPin, Phone, Mail, Clock, Video, Share2, CheckCircle } from "lucide-react";
+
+const client = generateClient<Schema>();
 
 const bankDetails = [
   { label: "Bank Name", value: "Bank of the South Pacific (BSP)" },
   { label: "Account Name", value: "Rev Sione Kami Memorial Church" },
   { label: "Account Number", value: "XXXX-XXXX-XXXX" },
-  { label: "Branch", value: "Suva Main Branch" },
+  { label: "Branch", value: "Port Moresby Main Branch" },
 ];
 
 const givingCategories = [
@@ -22,13 +24,39 @@ const givingCategories = [
 ];
 
 const contactInfo = [
-  { Icon: MapPin, title: "Address", info: "123 Church Street, Suva, Fiji" },
-  { Icon: Phone, title: "Phone", info: "+679 XXX XXXX" },
-  { Icon: Mail, title: "Email", info: "info@rskmc.org" },
+  { Icon: MapPin, title: "Address", info: "Gabaka Street, Port Moresby, NCD 675, Papua New Guinea" },
+  { Icon: Phone, title: "Phone", info: "325 5448" },
+  { Icon: Mail, title: "Email", info: "info@rskmc.org.pg" },
   { Icon: Clock, title: "Office Hours", info: "Monday - Friday: 9:00 AM - 4:00 PM" },
 ];
 
 export default function Give() {
+  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSending(true);
+    setError("");
+    try {
+      await client.models.ContactSubmission.create({
+        name: form.name,
+        email: form.email,
+        subject: form.subject,
+        message: form.message,
+        read: false,
+      });
+      setSent(true);
+      setForm({ name: "", email: "", subject: "", message: "" });
+    } catch {
+      setError("Failed to send message. Please try again or call us directly.");
+    } finally {
+      setSending(false);
+    }
+  }
+
   return (
     <div>
       {/* Hero */}
@@ -131,46 +159,74 @@ export default function Give() {
             </div>
 
             {/* Contact Form */}
-            <form className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-                <input
-                  type="text"
-                  placeholder="John Smith"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy-500 text-sm"
-                />
+            {sent ? (
+              <div className="flex flex-col items-center justify-center text-center py-12">
+                <CheckCircle size={52} className="text-green-500 mb-4" />
+                <h3 className="text-xl font-bold text-navy-700 mb-2">Message Sent!</h3>
+                <p className="text-gray-600 mb-6">Thank you for reaching out. We will get back to you soon.</p>
+                <button
+                  onClick={() => setSent(false)}
+                  className="text-gold-600 font-semibold hover:underline text-sm"
+                >
+                  Send another message
+                </button>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                <input
-                  type="email"
-                  placeholder="john@example.com"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy-500 text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-                <input
-                  type="text"
-                  placeholder="How can we help?"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy-500 text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-                <textarea
-                  rows={5}
-                  placeholder="Your message..."
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy-500 text-sm resize-none"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-navy-700 text-white font-bold py-3 rounded-lg hover:bg-navy-600 transition-colors"
-              >
-                Send Message
-              </button>
-            </form>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                  <input
+                    type="text"
+                    value={form.name}
+                    onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                    required
+                    placeholder="John Smith"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                    required
+                    placeholder="john@example.com"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                  <input
+                    type="text"
+                    value={form.subject}
+                    onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))}
+                    required
+                    placeholder="How can we help?"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy-500 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                  <textarea
+                    rows={5}
+                    value={form.message}
+                    onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
+                    required
+                    placeholder="Your message..."
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy-500 text-sm resize-none"
+                  />
+                </div>
+                {error && <p className="text-red-600 text-sm">{error}</p>}
+                <button
+                  type="submit"
+                  disabled={sending}
+                  className="w-full bg-navy-700 text-white font-bold py-3 rounded-lg hover:bg-navy-600 transition-colors disabled:opacity-50"
+                >
+                  {sending ? "Sending..." : "Send Message"}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </section>

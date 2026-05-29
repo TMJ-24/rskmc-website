@@ -8,16 +8,17 @@ export default function Footer() {
         <div>
           <h3 className="text-gold-500 font-bold text-lg mb-1">RSKMC</h3>
           <p className="text-blue-200 text-sm mb-3">Rev Sione Kami Memorial Church</p>
-          <p className="text-blue-300 text-sm">123 Church Street</p>
-          <p className="text-blue-300 text-sm">Suva, Fiji</p>
+          <p className="text-blue-300 text-sm">Gabaka Street</p>
+          <p className="text-blue-300 text-sm">Port Moresby, NCD 675</p>
+          <p className="text-blue-300 text-sm">Papua New Guinea</p>
           <div className="mt-3 space-y-1">
             <p className="text-blue-300 text-sm flex items-center gap-2">
               <Phone size={13} className="shrink-0" />
-              +679 XXX XXXX
+              325 5448
             </p>
             <p className="text-blue-300 text-sm flex items-center gap-2">
               <Mail size={13} className="shrink-0" />
-              info@rskmc.org
+              info@rskmc.org.pg
             </p>
           </div>
         </div>

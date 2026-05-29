@@ -4,8 +4,21 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { generateClient } from "aws-amplify/data";
+import type { Schema } from "@/amplify/data/resource";
 
-const slides = [
+const client = generateClient<Schema>();
+
+interface Slide {
+  src: string;
+  eyebrow: string;
+  heading: [string, string];
+  sub: string;
+  primary: { label: string; href: string };
+  secondary: { label: string; href: string };
+}
+
+const staticSlides: Slide[] = [
   {
     src: "https://images.unsplash.com/photo-1477414348463-c0eb7f1359b6?auto=format&fit=crop&w=1920&q=80",
     eyebrow: "Welcome to RSKMC",
@@ -43,9 +56,35 @@ const slides = [
 const AUTOPLAY_MS = 5500;
 
 export default function HeroSlider() {
+  const [slides, setSlides] = useState<Slide[]>(staticSlides);
   const [current, setCurrent] = useState(0);
   const [animating, setAnimating] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    async function loadSlides() {
+      try {
+        const res = await client.models.HeroSlide.list();
+        const active = res.data.filter((s) => s.active !== false);
+        if (active.length > 0) {
+          const sorted = [...active].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+          setSlides(
+            sorted.map((s) => ({
+              src: s.imageUrl,
+              eyebrow: s.eyebrow,
+              heading: [s.headingLine1, s.headingLine2],
+              sub: s.sub,
+              primary: { label: s.primaryLabel, href: s.primaryHref },
+              secondary: { label: s.secondaryLabel, href: s.secondaryHref },
+            }))
+          );
+        }
+      } catch {
+        // fall back to static slides
+      }
+    }
+    loadSlides();
+  }, []);
 
   const goTo = useCallback((index: number) => {
     if (animating) return;
@@ -56,13 +95,12 @@ export default function HeroSlider() {
 
   const prev = useCallback(() => {
     goTo((current - 1 + slides.length) % slides.length);
-  }, [current, goTo]);
+  }, [current, goTo, slides.length]);
 
   const next = useCallback(() => {
     goTo((current + 1) % slides.length);
-  }, [current, goTo]);
+  }, [current, goTo, slides.length]);
 
-  // Auto-advance
   useEffect(() => {
     timerRef.current = setTimeout(next, AUTOPLAY_MS);
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
@@ -88,12 +126,11 @@ export default function HeroSlider() {
             priority={i === 0}
             sizes="100vw"
           />
-          {/* Gradient overlay — deeper at bottom so service-times banner blends */}
           <div className="absolute inset-0 bg-gradient-to-b from-navy-900/60 via-navy-900/50 to-navy-900/80" />
         </div>
       ))}
 
-      {/* Text content — only active slide text is interactive */}
+      {/* Text content */}
       <div className="relative z-20 h-full flex flex-col items-center justify-center text-center px-4">
         {slides.map((slide, i) => (
           <div
