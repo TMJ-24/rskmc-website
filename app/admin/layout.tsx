@@ -46,7 +46,6 @@ const rskTheme = createTheme({
         router: {
           boxShadow: { value: "none" },
           borderWidth: { value: "0px" },
-          borderRadius: { value: "16px" },
         },
         form: { padding: { value: "1.5rem 2rem 2rem" } },
       },
