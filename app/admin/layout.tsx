@@ -10,19 +10,33 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Mic, CalendarDays, MessageSquare, ImageIcon,
   LogOut, Church, Users, UserRound, Clock, Globe, Menu, X,
-  ShieldCheck, Pencil, Database,
+  ShieldCheck, Pencil, Database, Quote, Building2, Newspaper,
+  Star, BookOpen, Settings, Coins, Download,
 } from "lucide-react";
 
 const allLinks = [
-  { href: "/admin",             label: "Dashboard",       Icon: LayoutDashboard, exact: true, roles: ["admin", "editor"] },
-  { href: "/admin/sermons",     label: "Sermons",         Icon: Mic,             roles: ["admin", "editor"] },
-  { href: "/admin/events",      label: "Events",          Icon: CalendarDays,    roles: ["admin", "editor"] },
-  { href: "/admin/contact",     label: "Contact Messages",Icon: MessageSquare,   roles: ["admin"] },
-  { href: "/admin/slides",      label: "Hero Slides",     Icon: ImageIcon,       roles: ["admin", "editor"] },
-  { href: "/admin/ministries",  label: "Ministries",      Icon: Users,           roles: ["admin", "editor"] },
-  { href: "/admin/leaders",     label: "Leadership Team", Icon: UserRound,       roles: ["admin"] },
-  { href: "/admin/services",    label: "Service Times",   Icon: Clock,           roles: ["admin", "editor"] },
-  { href: "/admin/seed",        label: "Seed Data",       Icon: Database,        roles: ["admin"] },
+  // ── Core
+  { href: "/admin",                  label: "Dashboard",        Icon: LayoutDashboard, exact: true, roles: ["admin", "editor"] },
+  // ── Content
+  { href: "/admin/slides",           label: "Hero Slides",      Icon: ImageIcon,       roles: ["admin", "editor"] },
+  { href: "/admin/sermons",          label: "Sermons",          Icon: Mic,             roles: ["admin", "editor"] },
+  { href: "/admin/events",           label: "Events",           Icon: CalendarDays,    roles: ["admin", "editor"] },
+  { href: "/admin/news",             label: "News Posts",       Icon: Newspaper,       roles: ["admin", "editor"] },
+  { href: "/admin/testimonials",     label: "Testimonials",     Icon: Quote,           roles: ["admin", "editor"] },
+  // ── Church
+  { href: "/admin/leaders",          label: "Leadership",       Icon: UserRound,       roles: ["admin"] },
+  { href: "/admin/ministries",       label: "Ministries",       Icon: Users,           roles: ["admin", "editor"] },
+  { href: "/admin/services",         label: "Service Times",    Icon: Clock,           roles: ["admin", "editor"] },
+  { href: "/admin/highlights",       label: "Home Highlights",  Icon: Star,            roles: ["admin", "editor"] },
+  { href: "/admin/core-values",      label: "Core Values",      Icon: BookOpen,        roles: ["admin", "editor"] },
+  // ── Projects & Giving
+  { href: "/admin/projects",         label: "Projects",         Icon: Building2,       roles: ["admin", "editor"] },
+  { href: "/admin/giving",           label: "Giving Categories",Icon: Coins,           roles: ["admin"] },
+  // ── Site
+  { href: "/admin/site-settings",    label: "Site Settings",    Icon: Settings,        roles: ["admin"] },
+  { href: "/admin/contact",          label: "Contact Messages", Icon: MessageSquare,   roles: ["admin"] },
+  { href: "/admin/export",           label: "Export Data",      Icon: Download,        roles: ["admin"] },
+  { href: "/admin/seed",             label: "Seed Data",        Icon: Database,        roles: ["admin"] },
 ];
 
 const rskTheme = createTheme({

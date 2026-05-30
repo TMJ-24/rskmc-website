@@ -79,10 +79,7 @@ export default function Services() {
       {/* Schedule */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-xs font-semibold uppercase tracking-widest text-gold-600 mb-3 flex items-center gap-2">
-            <span className="inline-block w-6 h-px bg-gold-500" />
-            Gather With Us
-          </p>
+          <p className="eyebrow text-gold-600 mb-3">Gather With Us</p>
           <h2 className="text-3xl font-bold text-navy-700 mb-12">Weekly Schedule</h2>
           {loading ? (
             <div className="text-center text-gray-400 py-10">Loading schedule...</div>
@@ -100,7 +97,7 @@ export default function Services() {
                     {dayServices.map((svc) => (
                       <div
                         key={svc.id}
-                        className="group bg-white border border-gray-200 rounded-xl p-5 hover:border-gold-300 hover:-translate-y-0.5 transition-all duration-300"
+                        className="bg-white border border-gray-100 rounded-xl p-5"
                       >
                         <div className="flex items-start justify-between flex-wrap gap-3">
                           <div>
@@ -127,16 +124,13 @@ export default function Services() {
       {/* What to Expect */}
       <section className="bg-navy-700 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-xs font-semibold uppercase tracking-widest text-gold-400 mb-3 flex items-center gap-2">
-            <span className="inline-block w-6 h-px bg-gold-400" />
-            First Time Here?
-          </p>
+          <p className="eyebrow text-gold-400 mb-3">First Time Here?</p>
           <h2 className="text-3xl font-bold mb-12">What to Expect</h2>
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {expectSteps.map(({ Icon, title, desc }, i) => (
               <div
                 key={i}
-                className="bg-navy-600 rounded-xl p-6 hover:bg-navy-500/80 hover:-translate-y-0.5 transition-all duration-300"
+                className="bg-navy-600 rounded-xl p-6"
               >
                 <div className="w-12 h-12 bg-navy-700 text-gold-400 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Icon size={22} />
@@ -152,10 +146,7 @@ export default function Services() {
       {/* Ministries teaser */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-xs font-semibold uppercase tracking-widest text-gold-600 mb-3 flex items-center gap-2">
-            <span className="inline-block w-6 h-px bg-gold-500" />
-            Get Involved
-          </p>
+          <p className="eyebrow text-gold-600 mb-3">Get Involved</p>
           <h2 className="text-3xl font-bold text-navy-700 mb-4">Our Ministries</h2>
           <p className="text-gray-600 mb-10 max-w-2xl">
             RSKMC has a ministry for every member of the family — from children to seniors, worship to outreach.
@@ -171,9 +162,9 @@ export default function Services() {
             ].map(({ Icon, name, desc }, i) => (
               <div
                 key={i}
-                className="group bg-white border border-gray-200 rounded-xl p-6 hover:border-gold-300 hover:-translate-y-0.5 transition-all duration-300"
+                className="bg-white border border-gray-100 rounded-xl p-6"
               >
-                <div className="w-10 h-10 bg-navy-700 text-gold-400 rounded-lg flex items-center justify-center mb-4 group-hover:bg-navy-600 transition-colors duration-300">
+                <div className="w-10 h-10 bg-navy-700 text-gold-400 rounded-lg flex items-center justify-center mb-4">
                   <Icon size={18} />
                 </div>
                 <h3 className="font-bold text-navy-700 text-lg mb-2">{name}</h3>

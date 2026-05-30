@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import AmplifyProvider from "@/components/AmplifyProvider";
 import ConditionalLayout from "@/components/ConditionalLayout";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
 export const metadata: Metadata = {
   title: "Rev Sione Kami Memorial Church | RSKMC",
@@ -11,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <body>
         <AmplifyProvider>
           <ConditionalLayout>{children}</ConditionalLayout>

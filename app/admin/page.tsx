@@ -78,7 +78,7 @@ export default function AdminDashboard() {
           <Link
             key={label}
             href={href}
-            className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex items-center gap-4"
+            className="bg-white rounded-xl p-6 border border-gray-100 flex items-center gap-4"
           >
             <div className={`${color} text-white w-12 h-12 rounded-xl flex items-center justify-center shrink-0`}>
               <Icon size={22} />
@@ -91,7 +91,7 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <h2 className="font-bold text-navy-700">Recent Contact Messages</h2>
           <Link href="/admin/contact" className="text-gold-600 text-sm font-semibold hover:underline">

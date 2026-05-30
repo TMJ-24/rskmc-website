@@ -84,7 +84,7 @@ export default function AdminServices() {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         {loading ? (
           <div className="p-10 text-center text-gray-400">Loading...</div>
         ) : items.length === 0 ? (

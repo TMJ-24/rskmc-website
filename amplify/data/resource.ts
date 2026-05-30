@@ -1,6 +1,8 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 
 const schema = a.schema({
+  // ── Existing models ─────────────────────────────────────────────────────────
+
   Sermon: a
     .model({
       title:     a.string().required(),
@@ -68,14 +70,14 @@ const schema = a.schema({
 
   Ministry: a
     .model({
-      name:       a.string().required(),
-      commission: a.string().required(),
-      tagline:    a.string().required(),
+      name:        a.string().required(),
+      commission:  a.string().required(),
+      tagline:     a.string().required(),
       description: a.string().required(),
-      fellowship: a.string().required(),
-      icon:       a.string().required(),
-      order:      a.integer().required(),
-      published:  a.boolean(),
+      fellowship:  a.string().required(),
+      icon:        a.string().required(),
+      order:       a.integer().required(),
+      published:   a.boolean(),
     })
     .authorization((allow) => [
       allow.publicApiKey().to(["read"]),
@@ -105,6 +107,116 @@ const schema = a.schema({
       duration:    a.string(),
       order:       a.integer().required(),
       published:   a.boolean(),
+    })
+    .authorization((allow) => [
+      allow.publicApiKey().to(["read"]),
+      allow.authenticated().to(["create", "read", "update", "delete"]),
+    ]),
+
+  // ── New models ───────────────────────────────────────────────────────────────
+
+  Testimonial: a
+    .model({
+      name:      a.string().required(),
+      role:      a.string().required(),
+      quote:     a.string().required(),
+      highlight: a.boolean(),
+      order:     a.integer().required(),
+      published: a.boolean(),
+    })
+    .authorization((allow) => [
+      allow.publicApiKey().to(["read"]),
+      allow.authenticated().to(["create", "read", "update", "delete"]),
+    ]),
+
+  // Building / development projects
+  Project: a
+    .model({
+      title:           a.string().required(),
+      status:          a.string().required(), // "Planning" | "In Progress" | "Completed"
+      description:     a.string().required(),
+      goal:            a.string(),
+      progressPercent: a.integer(),
+      imageUrl:        a.string(),
+      order:           a.integer().required(),
+      published:       a.boolean(),
+    })
+    .authorization((allow) => [
+      allow.publicApiKey().to(["read"]),
+      allow.authenticated().to(["create", "read", "update", "delete"]),
+    ]),
+
+  // Ways to give / offering categories
+  GivingCategory: a
+    .model({
+      label:     a.string().required(),
+      icon:      a.string().required(), // lucide icon name string
+      order:     a.integer().required(),
+      published: a.boolean(),
+    })
+    .authorization((allow) => [
+      allow.publicApiKey().to(["read"]),
+      allow.authenticated().to(["create", "read", "update", "delete"]),
+    ]),
+
+  // Singleton site-wide settings — always take the first record
+  SiteSettings: a
+    .model({
+      churchName:    a.string().required(),
+      addressLine1:  a.string().required(),
+      city:          a.string().required(),
+      country:       a.string().required(),
+      phone:         a.string().required(),
+      email:         a.string().required(),
+      officeHours:   a.string().required(),
+      facebookUrl:   a.string(),
+      youtubeUrl:    a.string(),
+      bankName:      a.string().required(),
+      accountName:   a.string().required(),
+      accountNumber: a.string().required(),
+      bankBranch:    a.string().required(),
+    })
+    .authorization((allow) => [
+      allow.publicApiKey().to(["read"]),
+      allow.authenticated().to(["create", "read", "update", "delete"]),
+    ]),
+
+  // Church news / announcements (News & Events page)
+  NewsPost: a
+    .model({
+      title:         a.string().required(),
+      category:      a.string().required(),
+      body:          a.string().required(),
+      publishedDate: a.string().required(),
+      published:     a.boolean(),
+    })
+    .authorization((allow) => [
+      allow.publicApiKey().to(["read"]),
+      allow.authenticated().to(["create", "read", "update", "delete"]),
+    ]),
+
+  // Home page "pillars" section
+  ChurchHighlight: a
+    .model({
+      title:     a.string().required(),
+      desc:      a.string().required(),
+      icon:      a.string().required(), // lucide icon name string
+      order:     a.integer().required(),
+      published: a.boolean(),
+    })
+    .authorization((allow) => [
+      allow.publicApiKey().to(["read"]),
+      allow.authenticated().to(["create", "read", "update", "delete"]),
+    ]),
+
+  // About page core values section
+  CoreValue: a
+    .model({
+      title:     a.string().required(),
+      desc:      a.string().required(),
+      icon:      a.string().required(), // lucide icon name string
+      order:     a.integer().required(),
+      published: a.boolean(),
     })
     .authorization((allow) => [
       allow.publicApiKey().to(["read"]),

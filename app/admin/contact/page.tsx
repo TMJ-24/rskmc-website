@@ -64,7 +64,7 @@ export default function AdminContact() {
         ) : messages.map((msg) => (
           <div
             key={msg.id}
-            className={`bg-white rounded-xl border shadow-sm overflow-hidden ${!msg.read ? "border-gold-400" : "border-gray-100"}`}
+            className={`bg-white rounded-xl border overflow-hidden ${!msg.read ? "border-gold-400" : "border-gray-100"}`}
           >
             <div
               className="px-5 py-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50"

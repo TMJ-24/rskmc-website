@@ -1,6 +1,11 @@
 @import "tailwindcss";
 
+/* ── Tailwind v4 theme ───────────────────────────────────────────────────── */
 @theme {
+  /* Font — Inter (set via Next.js font variable) */
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+
+  /* RSKMC Navy palette */
   --color-navy-50:  #eef2ff;
   --color-navy-100: #dbeafe;
   --color-navy-200: #bfdbfe;
@@ -12,6 +17,7 @@
   --color-navy-800: #152c72;
   --color-navy-900: #0d1e52;
 
+  /* RSKMC Gold palette */
   --color-gold-50:  #f0f7ff;
   --color-gold-100: #dbeafe;
   --color-gold-200: #bfdbfe;
@@ -22,17 +28,104 @@
   --color-gold-700: #1e3a8a;
   --color-gold-800: #152c72;
   --color-gold-900: #0d1e52;
+
+  /* DTS shadows (adapted to RSKMC navy) */
+  --shadow-card: 0 1px 2px hsl(215deg 50% 12% / 0.04), 0 8px 24px -12px hsl(215deg 50% 12% / 0.08);
+  --shadow-lift: 0 1px 2px hsl(215deg 50% 12% / 0.06), 0 18px 40px -18px hsl(215deg 50% 12% / 0.18);
+  --shadow-gold: 0 0 0 1px hsl(220deg 70% 55% / 0.35), 0 12px 36px -12px hsl(220deg 70% 55% / 0.25);
+
+  /* DTS animation tokens */
+  --animate-fade-up:    fade-up   0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in:    fade-in   0.6s ease-out both;
+  --animate-fade-left:  fade-left 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-right: fade-right 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-scale-in:   scale-in  0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-float:      float     4s ease-in-out infinite;
+  --animate-pulse-soft: pulseSoft 2s ease-in-out infinite;
 }
 
-html {
-  scroll-behavior: smooth;
+/* ── Keyframes ───────────────────────────────────────────────────────────── */
+@keyframes progress  { from { width: 0%; }                               to { width: 100%; }                          }
+@keyframes fade-up   { 0% { opacity: 0; transform: translateY(12px);  } 100% { opacity: 1; transform: translateY(0);  } }
+@keyframes fade-in   { 0% { opacity: 0; }                               100% { opacity: 1; }                            }
+@keyframes fade-left { 0% { opacity: 0; transform: translateX(-16px); } 100% { opacity: 1; transform: translateX(0); } }
+@keyframes fade-right{ 0% { opacity: 0; transform: translateX(16px);  } 100% { opacity: 1; transform: translateX(0); } }
+@keyframes scale-in  { 0% { opacity: 0; transform: scale(0.94); }       100% { opacity: 1; transform: scale(1); }      }
+@keyframes float     { 0%, 100% { transform: translateY(0); }           50%  { transform: translateY(-6px); }          }
+@keyframes pulseSoft { 0%, 100% { opacity: 1; }                         50%  { opacity: 0.7; }                         }
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+@layer base {
+  :root { --font-inter: 'Inter'; }
+
+  html { scroll-behavior: smooth; }
+
+  /* Slim scrollbar (DTS style) */
+  ::-webkit-scrollbar       { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.18); border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.32); }
+  * { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.18) transparent; }
+
+  body {
+    font-family: var(--font-sans);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  ::selection { background: hsl(220deg 60% 50% / 0.2); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
-@keyframes progress {
-  from { width: 0%; }
-  to   { width: 100%; }
-}
+/* ── Components ──────────────────────────────────────────────────────────── */
+@layer components {
+  /* DTS eyebrow label — replaces the verbose tracking-widest pill pattern */
+  .eyebrow {
+    font-family: var(--font-sans);
+    @apply text-[11px] tracking-[0.22em] uppercase font-semibold inline-flex items-center self-start rounded-full px-3 py-1;
+    border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+  }
 
-.animate-progress {
-  animation: progress linear forwards;
+  /* DTS typography scale */
+  .h-section { @apply text-[clamp(1.85rem,3.6vw,2.85rem)] font-bold tracking-tight; line-height: 1.05; }
+  .h-card    { @apply text-xl font-semibold tracking-tight; line-height: 1.2; }
+  .body-lg   { @apply text-base md:text-lg leading-relaxed; }
+  .body      { @apply text-sm md:text-base leading-relaxed; }
+
+  /* Hero progress bar */
+  .animate-progress { animation: progress linear forwards; }
+
+  /* DTS gradient text */
+  .text-gradient {
+    background: linear-gradient(90deg, hsl(220deg 65% 65%), hsl(220deg 50% 80%));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* DTS grain texture overlay — add relative + grain classes to a container */
+  .grain::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity: 0.045;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+  }
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "@/amplify/data/resource";
 
@@ -107,7 +107,7 @@ export default function HeroSlider() {
   }, [current, next]);
 
   return (
-    <section className="relative h-[88vh] min-h-[580px] max-h-[920px] overflow-hidden bg-navy-900">
+    <section className="relative h-[62vh] min-h-[400px] max-h-[640px] overflow-hidden bg-navy-900">
 
       {/* Slides */}
       {slides.map((slide, i) => (
@@ -126,14 +126,13 @@ export default function HeroSlider() {
             priority={i === 0}
             sizes="100vw"
           />
-          {/* Stronger left-leaning gradient for readability */}
           <div className="absolute inset-0 bg-gradient-to-r from-navy-900/90 via-navy-900/60 to-navy-900/20" />
-          <div className="absolute inset-0 bg-gradient-to-t from-navy-900/70 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-navy-900/80 via-transparent to-transparent" />
         </div>
       ))}
 
-      {/* Text content — left-aligned, full-width container */}
-      <div className="relative z-20 h-full flex flex-col justify-center">
+      {/* Text content */}
+      <div className="relative z-20 h-full flex flex-col justify-center pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           {slides.map((slide, i) => (
             <div
@@ -144,34 +143,28 @@ export default function HeroSlider() {
                   : "opacity-0 translate-y-6 pointer-events-none absolute"
               }`}
             >
-              {/* Eyebrow with decorative line */}
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-0.5 bg-gold-500" />
-                <p className="text-gold-400 uppercase tracking-widest text-xs sm:text-sm font-semibold">
-                  {slide.eyebrow}
-                </p>
-              </div>
+              <p className="eyebrow text-gold-400 mb-4">{slide.eyebrow}</p>
 
-              <h1 className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-5 drop-shadow-lg max-w-3xl">
+              <h1 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 drop-shadow-lg max-w-3xl">
                 {slide.heading[0]}
                 <br />
                 <span className="text-gold-400">{slide.heading[1]}</span>
               </h1>
 
-              <p className="text-blue-100 text-base sm:text-lg md:text-xl max-w-xl mb-8 drop-shadow leading-relaxed">
+              <p className="text-blue-100 text-sm sm:text-base md:text-lg max-w-xl mb-6 drop-shadow leading-relaxed">
                 {slide.sub}
               </p>
 
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-3">
                 <Link
                   href={slide.primary.href}
-                  className="bg-gold-500 text-navy-800 font-bold px-8 py-3.5 rounded-lg hover:bg-gold-400 transition-colors text-sm sm:text-base"
+                  className="bg-gold-500 text-navy-800 font-bold px-6 py-2.5 rounded-lg hover:bg-gold-400 transition-colors text-sm"
                 >
                   {slide.primary.label}
                 </Link>
                 <Link
                   href={slide.secondary.href}
-                  className="border-2 border-white/70 text-white px-8 py-3.5 rounded-lg hover:bg-white hover:text-navy-700 transition-colors text-sm sm:text-base backdrop-blur-sm"
+                  className="border border-white/70 text-white px-6 py-2.5 rounded-lg hover:bg-white hover:text-navy-700 transition-colors text-sm backdrop-blur-sm"
                 >
                   {slide.secondary.label}
                 </Link>
@@ -181,56 +174,57 @@ export default function HeroSlider() {
         </div>
       </div>
 
-      {/* Slide counter + Prev / Next arrows — right side */}
-      <div className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center gap-3">
-        <button
-          onClick={prev}
-          aria-label="Previous slide"
-          className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/35 border border-white/25 flex items-center justify-center text-white transition-colors backdrop-blur-sm"
-        >
-          <ChevronLeft size={20} />
-        </button>
-        <span className="text-white/60 text-xs font-mono tabular-nums">
-          {String(current + 1).padStart(2, "0")}/{String(slides.length).padStart(2, "0")}
-        </span>
-        <button
-          onClick={next}
-          aria-label="Next slide"
-          className="w-10 h-10 rounded-full bg-white/15 hover:bg-white/35 border border-white/25 flex items-center justify-center text-white transition-colors backdrop-blur-sm"
-        >
-          <ChevronRight size={20} />
-        </button>
-      </div>
-
-      {/* Dot navigation */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
-        {slides.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => goTo(i)}
-            aria-label={`Go to slide ${i + 1}`}
-            className={`rounded-full transition-all duration-300 ${
-              i === current
-                ? "w-8 h-2 bg-gold-500"
-                : "w-2 h-2 bg-white/40 hover:bg-white/70"
-            }`}
+      {/* Bottom control bar: counter | dots | arrows */}
+      <div className="absolute bottom-0 left-0 right-0 z-30">
+        {/* Progress bar */}
+        <div className="h-0.5 bg-white/10">
+          <div
+            key={current}
+            className="h-full bg-gold-500 animate-progress"
+            style={{ animationDuration: `${AUTOPLAY_MS}ms` }}
           />
-        ))}
-      </div>
+        </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 hidden md:flex flex-col items-center gap-1 text-white/40">
-        <span className="text-xs tracking-widest uppercase">Scroll</span>
-        <ChevronDown size={16} className="animate-bounce" />
-      </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-3 bg-navy-900/60 backdrop-blur-sm">
+          {/* Slide counter */}
+          <span className="text-white/50 text-xs font-mono tabular-nums">
+            {String(current + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
+          </span>
 
-      {/* Progress bar */}
-      <div className="absolute bottom-0 left-0 right-0 z-30 h-0.5 bg-white/10">
-        <div
-          key={current}
-          className="h-full bg-gold-500 animate-progress"
-          style={{ animationDuration: `${AUTOPLAY_MS}ms` }}
-        />
+          {/* Dot indicators */}
+          <div className="flex items-center gap-2">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                aria-label={`Go to slide ${i + 1}`}
+                className={`rounded-full transition-all duration-300 ${
+                  i === current
+                    ? "w-6 h-1.5 bg-gold-500"
+                    : "w-1.5 h-1.5 bg-white/35 hover:bg-white/60"
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Prev / Next arrows */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={prev}
+              aria-label="Previous slide"
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 flex items-center justify-center text-white transition-colors"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <button
+              onClick={next}
+              aria-label="Next slide"
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 flex items-center justify-center text-white transition-colors"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   );

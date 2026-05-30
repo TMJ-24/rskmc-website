@@ -114,7 +114,7 @@ export default function AdminSlides() {
         ) : slides.length === 0 ? (
           <div className="p-10 text-center text-gray-400 bg-white rounded-xl">No slides yet. Add your first hero slide.</div>
         ) : slides.map((slide, idx) => (
-          <div key={slide.id} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
+          <div key={slide.id} className="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4">
             <div className="flex flex-col gap-1">
               <button onClick={() => move(slide, "up")} disabled={idx === 0} className="text-gray-300 hover:text-navy-700 disabled:opacity-30 transition-colors"><ArrowUp size={16} /></button>
               <button onClick={() => move(slide, "down")} disabled={idx === slides.length - 1} className="text-gray-300 hover:text-navy-700 disabled:opacity-30 transition-colors"><ArrowDown size={16} /></button>

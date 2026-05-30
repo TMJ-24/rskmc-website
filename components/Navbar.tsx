@@ -7,23 +7,23 @@ import { usePathname, useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
 
 const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/services", label: "Services" },
+  { href: "/",           label: "Home" },
+  { href: "/about",      label: "About" },
   { href: "/ministries", label: "Ministries" },
-  { href: "/sermons", label: "Sermons" },
-  { href: "/events", label: "Events" },
-  { href: "/testimonials", label: "Testimonials" },
-  { href: "/give", label: "Give" },
+  { href: "/services",   label: "Services" },
+  { href: "/sermons",    label: "Sermons" },
+  { href: "/events",     label: "News & Events" },
+  { href: "/projects",   label: "Projects" },
+  { href: "/give",       label: "Give" },
 ];
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen,   setMenuOpen]   = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [scrolled, setScrolled] = useState(false);
+  const [searchQuery,setSearchQuery]= useState("");
+  const [scrolled,   setScrolled]   = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
+  const router   = useRouter();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  function handleSearch(e: React.FormEvent) {
+  function handleSearch(e: { preventDefault(): void }) {
     e.preventDefault();
     const q = searchQuery.trim();
     if (!q) return;
@@ -52,46 +52,44 @@ export default function Navbar() {
   }
 
   return (
-    <nav className={`bg-navy-700 text-white sticky top-0 z-50 transition-shadow duration-300 ${scrolled ? "shadow-xl shadow-navy-900/40" : "shadow-lg"}`}>
+    <nav className={`bg-navy-800 text-white sticky top-0 z-50 transition-all duration-300 ${
+      scrolled ? "shadow-[0_4px_24px_-8px_hsl(215deg_50%_5%/0.5)]" : ""
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 shrink-0 group">
-            <div className="relative">
-              <Image
-                src="/logo.jpg"
-                alt="RSKMC Logo"
-                width={40}
-                height={40}
-                className="rounded-full object-cover ring-2 ring-gold-500/30 group-hover:ring-gold-500/70 transition-all duration-200"
-                priority
-              />
-            </div>
+            <Image
+              src="/logo.jpg"
+              alt="RSKMC"
+              width={38}
+              height={38}
+              className="rounded-full object-cover ring-2 ring-white/10 group-hover:ring-gold-500/50 transition-all duration-200"
+              priority
+            />
             <div className="flex flex-col leading-tight">
               <span className="text-gold-400 font-bold text-sm tracking-widest uppercase">RSKMC</span>
-              <span className="text-blue-300/80 text-xs hidden sm:block tracking-wide">Rev Sione Kami Memorial Church</span>
+              <span className="text-blue-300/60 text-[11px] hidden sm:block tracking-wide">Rev Sione Kami Memorial Church</span>
             </div>
           </Link>
 
           {/* Desktop nav */}
-          <div className="hidden md:flex items-center gap-0.5">
-            {!searchOpen &&
-              navLinks.map(({ href, label }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 whitespace-nowrap ${
-                    pathname === href
-                      ? "bg-gold-500 text-navy-900 font-semibold shadow-sm"
-                      : "text-blue-200 hover:text-white hover:bg-navy-600/70"
-                  }`}
-                >
-                  {label}
-                </Link>
-              ))}
+          <div className="hidden md:flex items-center gap-1">
+            {!searchOpen && navLinks.map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                  pathname === href
+                    ? "bg-gold-500/15 text-gold-400 font-semibold"
+                    : "text-blue-200/80 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                {label}
+              </Link>
+            ))}
 
-            {/* Search bar (expanded) */}
             {searchOpen && (
               <form onSubmit={handleSearch} className="flex items-center gap-2">
                 <input
@@ -100,57 +98,50 @@ export default function Navbar() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search RSKMC…"
-                  className="bg-navy-800/80 text-white placeholder-blue-400 border border-navy-500 rounded-md px-3 py-1.5 text-sm w-60 focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 transition-all duration-200"
+                  className="bg-white/8 text-white placeholder-blue-300/50 border border-white/10 rounded-lg px-3 py-1.5 text-sm w-56 focus:outline-none focus:border-gold-500/50 focus:ring-1 focus:ring-gold-500/30 transition-all duration-200"
                 />
-                <button
-                  type="submit"
-                  className="p-1.5 rounded-md text-blue-200 hover:text-white hover:bg-navy-600 transition-all duration-200"
-                  aria-label="Submit search"
-                >
-                  <Search size={17} />
+                <button type="submit" className="p-1.5 rounded-lg text-blue-300 hover:text-white hover:bg-white/8 transition-all duration-200" aria-label="Search">
+                  <Search size={16} />
                 </button>
               </form>
             )}
 
-            {/* Search toggle */}
             <button
-              onClick={() => (searchOpen ? closeSearch() : setSearchOpen(true))}
-              className="ml-1 p-2 rounded-md text-blue-200 hover:text-white hover:bg-navy-600/70 transition-all duration-200"
+              onClick={() => searchOpen ? closeSearch() : setSearchOpen(true)}
+              className="ml-1 p-2 rounded-lg text-blue-300/80 hover:text-white hover:bg-white/5 transition-all duration-200"
               aria-label={searchOpen ? "Close search" : "Open search"}
             >
-              {searchOpen ? <X size={17} /> : <Search size={17} />}
+              {searchOpen ? <X size={16} /> : <Search size={16} />}
             </button>
           </div>
 
           {/* Mobile icons */}
-          <div className="md:hidden flex items-center gap-0.5">
+          <div className="md:hidden flex items-center gap-1">
             <button
               onClick={() => { setSearchOpen(!searchOpen); setMenuOpen(false); }}
-              className="p-2 rounded-md text-blue-200 hover:text-white hover:bg-navy-600/70 transition-all duration-200"
+              className="p-2 rounded-lg text-blue-300/80 hover:text-white hover:bg-white/5 transition-all duration-200"
               aria-label="Toggle search"
             >
-              {searchOpen ? <X size={20} /> : <Search size={20} />}
+              {searchOpen ? <X size={19} /> : <Search size={19} />}
             </button>
             <button
               onClick={() => { setMenuOpen(!menuOpen); setSearchOpen(false); }}
-              className="p-2 rounded-md text-blue-200 hover:text-white hover:bg-navy-600/70 transition-all duration-200"
+              className="p-2 rounded-lg text-blue-300/80 hover:text-white hover:bg-white/5 transition-all duration-200"
               aria-label="Toggle menu"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {menuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
+                {menuOpen
+                  ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />}
               </svg>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile search bar */}
+      {/* Mobile search */}
       {searchOpen && (
-        <div className="md:hidden border-t border-navy-600 bg-navy-800/95 backdrop-blur-sm px-4 py-3">
+        <div className="md:hidden border-t border-white/8 bg-navy-900/95 backdrop-blur-sm px-4 py-3">
           <form onSubmit={handleSearch} className="flex gap-2">
             <input
               type="text"
@@ -158,13 +149,10 @@ export default function Navbar() {
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search RSKMC…"
               autoFocus
-              className="flex-1 bg-navy-900/80 text-white placeholder-blue-400 border border-navy-500 rounded-md px-3 py-2.5 text-sm focus:outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/20 transition-all duration-200"
+              className="flex-1 bg-white/5 text-white placeholder-blue-300/50 border border-white/10 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-gold-500/50 focus:ring-1 focus:ring-gold-500/30 transition-all duration-200"
             />
-            <button
-              type="submit"
-              className="bg-gold-500 text-navy-800 px-4 py-2.5 rounded-md text-sm font-bold hover:bg-gold-400 active:scale-95 transition-all duration-200"
-            >
-              Search
+            <button type="submit" className="bg-gold-500 text-navy-800 px-4 py-2.5 rounded-lg text-sm font-bold hover:bg-gold-400 transition-colors duration-200">
+              Go
             </button>
           </form>
         </div>
@@ -172,17 +160,17 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-navy-600 bg-navy-800/95 backdrop-blur-sm px-4 pb-5 pt-3">
+        <div className="md:hidden border-t border-white/8 bg-navy-900/95 backdrop-blur-sm px-4 pb-4 pt-2">
           <div className="space-y-0.5">
             {navLinks.map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
                 onClick={() => setMenuOpen(false)}
-                className={`flex items-center px-4 py-3 rounded-md text-sm font-medium transition-all duration-200 ${
+                className={`flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                   pathname === href
-                    ? "bg-gold-500 text-navy-900 font-semibold"
-                    : "text-blue-200 hover:text-white hover:bg-navy-700"
+                    ? "bg-gold-500/15 text-gold-400 font-semibold"
+                    : "text-blue-200/80 hover:text-white hover:bg-white/5"
                 }`}
               >
                 {label}

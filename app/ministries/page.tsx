@@ -106,10 +106,7 @@ export default function Ministries() {
       {/* Intro */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-xs font-semibold uppercase tracking-widest text-gold-600 mb-3 flex items-center gap-2">
-            <span className="inline-block w-6 h-px bg-gold-500" />
-            Structure &amp; Purpose
-          </p>
+          <p className="eyebrow text-gold-600 mb-3">Structure &amp; Purpose</p>
           <h2 className="text-2xl font-bold text-navy-700 mb-4">Built to Serve, Organised to Thrive</h2>
           <p className="text-gray-600 leading-relaxed max-w-3xl">
             RSKMC organises its ministries under four Commissions — Worship, Discipleship, Evangelism,
@@ -174,10 +171,7 @@ export default function Ministries() {
       {/* Join CTA */}
       <section className="bg-navy-700 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-xs font-semibold uppercase tracking-widest text-gold-400 mb-3 flex items-center gap-2">
-            <span className="inline-block w-6 h-px bg-gold-400" />
-            Take the Next Step
-          </p>
+          <p className="eyebrow text-gold-400 mb-3">Take the Next Step</p>
           <h2 className="text-2xl font-bold mb-3">Ready to Serve?</h2>
           <p className="text-blue-200 max-w-xl mb-8">
             Join a ministry and discover the joy of serving God alongside your RSKMC family.

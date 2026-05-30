@@ -61,10 +61,7 @@ export default function Sermons() {
       {/* Sermon List */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-xs font-semibold uppercase tracking-widest text-gold-600 mb-3 flex items-center gap-2">
-            <span className="inline-block w-6 h-px bg-gold-500" />
-            Messages
-          </p>
+          <p className="eyebrow text-gold-600 mb-3">Messages</p>
           <h2 className="text-3xl font-bold text-navy-700 mb-10">Recent Sermons</h2>
           {loading ? (
             <div className="text-center text-gray-400 py-20">Loading sermons...</div>
@@ -119,10 +116,7 @@ export default function Sermons() {
       {/* Never Miss CTA */}
       <section className="bg-gray-50 border-t border-gray-200 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-xs font-semibold uppercase tracking-widest text-gold-600 mb-3 flex items-center gap-2">
-            <span className="inline-block w-6 h-px bg-gold-500" />
-            Stay Connected
-          </p>
+          <p className="eyebrow text-gold-600 mb-3">Stay Connected</p>
           <h2 className="text-2xl font-bold text-navy-700 mb-3">Never Miss a Sermon</h2>
           <p className="text-gray-600 mb-8">
             Subscribe to our channels for weekly sermon uploads and ministry updates.

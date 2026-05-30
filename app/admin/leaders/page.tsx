@@ -87,7 +87,7 @@ export default function AdminLeaders() {
         ) : items.length === 0 ? (
           <div className="col-span-full p-10 text-center text-gray-400 bg-white rounded-xl">No leaders yet. Add your first one.</div>
         ) : items.map((l) => (
-          <div key={l.id} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+          <div key={l.id} className="bg-white rounded-xl border border-gray-200 p-5">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-navy-700 text-gold-400 rounded-full flex items-center justify-center text-lg font-bold shrink-0">
                 {l.name.split(" ").map((w) => w[0]).slice(0, 2).join("")}
