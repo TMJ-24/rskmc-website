@@ -1,24 +1,17 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { generateClient } from "aws-amplify/data";
-import type { Schema } from "@/amplify/data/resource";
 import Image from "next/image";
 import Link from "next/link";
 import { Building2, CheckCircle2, Clock, CircleDot, ChevronRight } from "lucide-react";
 import Breadcrumb from "@/components/Breadcrumb";
 
-const client = generateClient<Schema>();
-type Project = Schema["Project"]["type"];
 type ProjectStatus = "Completed" | "In Progress" | "Planning";
 
-const staticProjects: Project[] = [
-  { id: "1", title: "Church Sanctuary Extension", status: "In Progress", description: "Expanding the main sanctuary to accommodate our growing congregation. The extension will add seating for an additional 300 worshippers and include improved acoustics and lighting.", goal: "K 850,000", progressPercent: 62, imageUrl: "https://images.unsplash.com/photo-1438032005730-c779502df39b?w=800&q=75", order: 1, published: true, createdAt: "", updatedAt: "" },
-  { id: "2", title: "Fellowship Hall & Kitchen",  status: "Planning",    description: "A dedicated multi-purpose hall for community gatherings, meals, and ministry events. The facility will include a commercial kitchen to support our food-relief outreach programmes.", goal: "K 420,000", progressPercent: 18, imageUrl: "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800&q=75", order: 2, published: true, createdAt: "", updatedAt: "" },
-  { id: "3", title: "Youth Centre & Library",     status: "Planning",    description: "A safe and inspiring space for young people — featuring a study library, meeting rooms, and recreational areas to support discipleship and community engagement for youth.", goal: "K 310,000", progressPercent: 8,  imageUrl: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=75", order: 3, published: true, createdAt: "", updatedAt: "" },
-  { id: "4", title: "Perimeter Fence & Gating",   status: "Completed",   description: "Security perimeter fencing and automated gating for the church compound, improving safety for all services and events. Completed and commissioned in early 2025.", order: 4, published: true, createdAt: "", updatedAt: "" },
-  { id: "5", title: "Carpark & Drainage",          status: "Completed",   description: "Sealed carpark with stormwater drainage to serve the main sanctuary and future facilities. Includes accessible parking bays and improved pedestrian pathways.", order: 5, published: true, createdAt: "", updatedAt: "" },
-] as Project[];
+const projects = [
+  { id: "1", title: "Church Sanctuary Extension",  status: "In Progress" as ProjectStatus, description: "Expanding the main sanctuary to accommodate our growing congregation. The extension will add seating for an additional 300 worshippers and include improved acoustics and lighting.",                         goal: "K 850,000", progressPercent: 62, imageUrl: "https://images.unsplash.com/photo-1438032005730-c779502df39b?w=800&q=75" },
+  { id: "2", title: "Fellowship Hall & Kitchen",   status: "Planning"    as ProjectStatus, description: "A dedicated multi-purpose hall for community gatherings, meals, and ministry events. The facility will include a commercial kitchen to support our food-relief outreach programmes.",                     goal: "K 420,000", progressPercent: 18, imageUrl: "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800&q=75" },
+  { id: "3", title: "Youth Centre & Library",      status: "Planning"    as ProjectStatus, description: "A safe and inspiring space for young people — featuring a study library, meeting rooms, and recreational areas to support discipleship and community engagement for youth.",                             goal: "K 310,000", progressPercent: 8,  imageUrl: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=75" },
+  { id: "4", title: "Perimeter Fence & Gating",   status: "Completed"   as ProjectStatus, description: "Security perimeter fencing and automated gating for the church compound, improving safety for all services and events. Completed and commissioned in early 2025.", goal: undefined, progressPercent: undefined, imageUrl: undefined },
+  { id: "5", title: "Carpark & Drainage",          status: "Completed"   as ProjectStatus, description: "Sealed carpark with stormwater drainage to serve the main sanctuary and future facilities. Includes accessible parking bays and improved pedestrian pathways.", goal: undefined, progressPercent: undefined, imageUrl: undefined },
+];
 
 const statusConfig: Record<ProjectStatus, { icon: typeof CheckCircle2; colour: string; bg: string }> = {
   Completed:    { icon: CheckCircle2, colour: "text-emerald-600", bg: "bg-emerald-50" },
@@ -44,34 +37,15 @@ function ProgressBar({ value }: { value: number }) {
         <span className="font-semibold text-navy-700">{value}%</span>
       </div>
       <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-        <div className="h-full bg-navy-700 rounded-full transition-all duration-700" style={{ width: `${value}%` }} />
+        <div className="h-full bg-navy-700 rounded-full" style={{ width: `${value}%` }} />
       </div>
     </div>
   );
 }
 
 export default function Projects() {
-  const [items, setItems] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const res = await client.models.Project.list();
-        const published = res.data.filter((p) => p.published !== false);
-        const sorted = [...published].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-        setItems(sorted.length > 0 ? sorted : staticProjects);
-      } catch {
-        setItems(staticProjects);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, []);
-
-  const active    = items.filter((p) => p.status !== "Completed");
-  const completed = items.filter((p) => p.status === "Completed");
+  const active    = projects.filter((p) => p.status !== "Completed");
+  const completed = projects.filter((p) => p.status === "Completed");
 
   return (
     <div>
@@ -95,7 +69,7 @@ export default function Projects() {
       <section className="border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-3 divide-x divide-gray-100">
           {[
-            { value: items.length,    label: "Total Projects" },
+            { value: projects.length, label: "Total Projects" },
             { value: active.length,   label: "Active / Planned" },
             { value: completed.length,label: "Completed" },
           ].map(({ value, label }) => (
@@ -107,65 +81,59 @@ export default function Projects() {
         </div>
       </section>
 
-      {loading ? (
-        <div className="py-24 text-center text-gray-400">Loading projects…</div>
-      ) : (
-        <>
-          {/* Active */}
-          {active.length > 0 && (
-            <section className="py-24">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <p className="eyebrow text-gold-600 mb-4">Current &amp; Upcoming</p>
-                <h2 className="h-section text-navy-700 mb-12">Active Projects</h2>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {active.map((p) => (
-                    <div key={p.id} className="group bg-white rounded-2xl overflow-hidden shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] hover:-translate-y-1 transition-all duration-300">
-                      {p.imageUrl && (
-                        <div className="relative h-44 overflow-hidden">
-                          <Image src={p.imageUrl} alt={p.title} fill className="object-cover scale-105 group-hover:scale-100 transition-transform duration-500" />
-                          <div className="absolute inset-0 bg-navy-900/40" />
-                          <div className="absolute top-3 left-3"><StatusBadge status={p.status} /></div>
-                        </div>
-                      )}
-                      <div className="p-6">
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <h3 className="h-card text-navy-700">{p.title}</h3>
-                          {!p.imageUrl && <StatusBadge status={p.status} />}
-                        </div>
-                        <p className="body text-gray-500 mb-3">{p.description}</p>
-                        {p.goal && <p className="text-xs text-gray-400">Goal: <span className="font-semibold text-navy-700">{p.goal}</span></p>}
-                        {p.progressPercent != null && <ProgressBar value={p.progressPercent} />}
-                      </div>
+      {/* Active */}
+      {active.length > 0 && (
+        <section className="py-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p className="eyebrow text-gold-600 mb-4">Current &amp; Upcoming</p>
+            <h2 className="h-section text-navy-700 mb-12">Active Projects</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {active.map((p) => (
+                <div key={p.id} className="group bg-white rounded-2xl overflow-hidden shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-lift)] hover:-translate-y-1 transition-all duration-300">
+                  {p.imageUrl && (
+                    <div className="relative h-44 overflow-hidden">
+                      <Image src={p.imageUrl} alt={p.title} fill className="object-cover scale-105 group-hover:scale-100 transition-transform duration-500" />
+                      <div className="absolute inset-0 bg-navy-900/40" />
+                      <div className="absolute top-3 left-3"><StatusBadge status={p.status} /></div>
                     </div>
-                  ))}
+                  )}
+                  <div className="p-6">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <h3 className="h-card text-navy-700">{p.title}</h3>
+                      {!p.imageUrl && <StatusBadge status={p.status} />}
+                    </div>
+                    <p className="body text-gray-500 mb-3">{p.description}</p>
+                    {p.goal && <p className="text-xs text-gray-400">Goal: <span className="font-semibold text-navy-700">{p.goal}</span></p>}
+                    {p.progressPercent != null && <ProgressBar value={p.progressPercent} />}
+                  </div>
                 </div>
-              </div>
-            </section>
-          )}
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
-          {/* Completed */}
-          {completed.length > 0 && (
-            <section className="bg-gray-50 py-24 border-t border-gray-100">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <p className="eyebrow text-gold-600 mb-4">To God&apos;s Glory</p>
-                <h2 className="h-section text-navy-700 mb-12">Completed Projects</h2>
-                <div className="grid md:grid-cols-2 gap-5">
-                  {completed.map((p) => (
-                    <div key={p.id} className="flex gap-4 bg-white rounded-2xl p-5 shadow-[var(--shadow-card)]">
-                      <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
-                        <CheckCircle2 size={20} />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-navy-700 mb-1">{p.title}</h3>
-                        <p className="body text-gray-500">{p.description}</p>
-                      </div>
-                    </div>
-                  ))}
+      {/* Completed */}
+      {completed.length > 0 && (
+        <section className="bg-gray-50 py-24 border-t border-gray-100">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p className="eyebrow text-gold-600 mb-4">To God&apos;s Glory</p>
+            <h2 className="h-section text-navy-700 mb-12">Completed Projects</h2>
+            <div className="grid md:grid-cols-2 gap-5">
+              {completed.map((p) => (
+                <div key={p.id} className="flex gap-4 bg-white rounded-2xl p-5 shadow-[var(--shadow-card)]">
+                  <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                    <CheckCircle2 size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-navy-700 mb-1">{p.title}</h3>
+                    <p className="body text-gray-500">{p.description}</p>
+                  </div>
                 </div>
-              </div>
-            </section>
-          )}
-        </>
+              ))}
+            </div>
+          </div>
+        </section>
       )}
 
       {/* CTA */}

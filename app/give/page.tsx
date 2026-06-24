@@ -1,98 +1,46 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { generateClient } from "aws-amplify/data";
-import type { Schema } from "@/amplify/data/resource";
-import { Landmark, Heart, Building2, Globe, Baby, GraduationCap, Utensils, MapPin, Phone, Mail, Clock, Video, Share2, CheckCircle, LucideIcon } from "lucide-react";
+import { useState } from "react";
+import { Landmark, Heart, Building2, Globe, Baby, GraduationCap, Utensils, MapPin, Phone, Mail, Clock, Share2, Video, CheckCircle, LucideIcon } from "lucide-react";
 import Breadcrumb from "@/components/Breadcrumb";
 import Image from "next/image";
 
-const client = generateClient<Schema>();
-type GivingCategory = Schema["GivingCategory"]["type"];
-type SiteSettings   = Schema["SiteSettings"]["type"];
-
-// Icon resolver for lucide icons stored as strings
 const ICON_MAP: Record<string, LucideIcon> = {
   Heart, Building2, Globe, Baby, GraduationCap, Utensils, Landmark, MapPin, Phone, Mail, Clock,
 };
 
-const staticGiving: GivingCategory[] = [
-  { id: "1", label: "General Tithe and Offering", icon: "Heart",        order: 1, published: true, createdAt: "", updatedAt: "" },
-  { id: "2", label: "Building Fund",               icon: "Building2",   order: 2, published: true, createdAt: "", updatedAt: "" },
-  { id: "3", label: "Missions and Outreach",       icon: "Globe",       order: 3, published: true, createdAt: "", updatedAt: "" },
-  { id: "4", label: "Children's Ministry",         icon: "Baby",        order: 4, published: true, createdAt: "", updatedAt: "" },
-  { id: "5", label: "Youth and Education",         icon: "GraduationCap",order: 5, published: true, createdAt: "", updatedAt: "" },
-  { id: "6", label: "Community Food Programme",    icon: "Utensils",    order: 6, published: true, createdAt: "", updatedAt: "" },
-] as GivingCategory[];
+const giving = [
+  { id: "1", label: "General Tithe and Offering", icon: "Heart"         },
+  { id: "2", label: "Building Fund",               icon: "Building2"    },
+  { id: "3", label: "Missions and Outreach",       icon: "Globe"        },
+  { id: "4", label: "Children's Ministry",         icon: "Baby"         },
+  { id: "5", label: "Youth and Education",         icon: "GraduationCap"},
+  { id: "6", label: "Community Food Programme",    icon: "Utensils"     },
+];
 
-const defaultSettings = {
-  bankName:      "Bank of the South Pacific (BSP)",
-  accountName:   "Rev Sione Kami Memorial Church",
-  accountNumber: "XXXX-XXXX-XXXX",
-  bankBranch:    "Port Moresby Main Branch",
-  addressLine1:  "Gabaka Street",
-  city:          "Port Moresby, NCD 675",
-  country:       "Papua New Guinea",
-  phone:         "325 5448",
-  email:         "info@rskmc.org.pg",
-  officeHours:   "Monday – Friday: 9:00 AM – 4:00 PM",
-  facebookUrl:   "",
-  youtubeUrl:    "",
-};
+const bankDetails = [
+  { label: "Bank Name",      value: "Bank of the South Pacific (BSP)" },
+  { label: "Account Name",   value: "Rev Sione Kami Memorial Church"  },
+  { label: "Account Number", value: "XXXX-XXXX-XXXX"                  },
+  { label: "Branch",         value: "Port Moresby Main Branch"        },
+];
+
+const contactInfo = [
+  { Icon: MapPin, title: "Address",      info: "Gabaka Street, Port Moresby, NCD 675, Papua New Guinea" },
+  { Icon: Phone,  title: "Phone",        info: "325 5448"                                               },
+  { Icon: Mail,   title: "Email",        info: "info@rskmc.org.pg"                                      },
+  { Icon: Clock,  title: "Office Hours", info: "Monday – Friday: 9:00 AM – 4:00 PM"                    },
+];
 
 export default function Give() {
-  const [giving,   setGiving]   = useState<GivingCategory[]>([]);
-  const [settings, setSettings] = useState<Partial<SiteSettings>>(defaultSettings);
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
-  const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
-  const [error, setError] = useState("");
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const [gRes, sRes] = await Promise.all([
-          client.models.GivingCategory.list(),
-          client.models.SiteSettings.list(),
-        ]);
-        const published = gRes.data.filter((g) => g.published !== false).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-        if (published.length > 0) setGiving(published);
-        else setGiving(staticGiving);
-        if (sRes.data.length > 0) setSettings(sRes.data[0]);
-      } catch {
-        setGiving(staticGiving);
-      }
-    }
-    load();
-  }, []);
-
-  const bankDetails = [
-    { label: "Bank Name",       value: settings.bankName ?? "" },
-    { label: "Account Name",    value: settings.accountName ?? "" },
-    { label: "Account Number",  value: settings.accountNumber ?? "" },
-    { label: "Branch",          value: settings.bankBranch ?? "" },
-  ];
-
-  const contactInfo = [
-    { Icon: MapPin, title: "Address",      info: `${settings.addressLine1 ?? ""}, ${settings.city ?? ""}, ${settings.country ?? ""}` },
-    { Icon: Phone,  title: "Phone",        info: settings.phone ?? "" },
-    { Icon: Mail,   title: "Email",        info: settings.email ?? "" },
-    { Icon: Clock,  title: "Office Hours", info: settings.officeHours ?? "" },
-  ];
-
-  async function handleSubmit(e: { preventDefault(): void }) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSending(true);
-    setError("");
-    try {
-      await client.models.ContactSubmission.create({ ...form, read: false });
-      setSent(true);
-      setForm({ name: "", email: "", subject: "", message: "" });
-    } catch {
-      setError("Failed to send message. Please try again or call us directly.");
-    } finally {
-      setSending(false);
-    }
+    const body = `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`;
+    window.location.href = `mailto:info@rskmc.org.pg?subject=${encodeURIComponent(form.subject)}&body=${encodeURIComponent(body)}`;
+    setSent(true);
   }
 
   return (
@@ -188,19 +136,12 @@ export default function Give() {
               <div className="pt-4 border-t border-gray-200">
                 <p className="font-semibold text-navy-700 mb-3 text-sm">Follow Us</p>
                 <div className="flex gap-3">
-                  {settings.facebookUrl && (
-                    <a href={settings.facebookUrl} target="_blank" rel="noopener noreferrer" className="bg-blue-700 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-800 active:scale-95 transition-all duration-200 flex items-center gap-2">
-                      <Share2 size={15} /> Facebook
-                    </a>
-                  )}
-                  {settings.youtubeUrl && (
-                    <a href={settings.youtubeUrl} target="_blank" rel="noopener noreferrer" className="bg-red-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-red-700 active:scale-95 transition-all duration-200 flex items-center gap-2">
-                      <Video size={15} /> YouTube
-                    </a>
-                  )}
-                  {!settings.facebookUrl && !settings.youtubeUrl && (
-                    <p className="text-gray-400 text-sm">Social links managed in Site Settings.</p>
-                  )}
+                  <a href="#" className="bg-blue-700 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-800 active:scale-95 transition-all duration-200 flex items-center gap-2">
+                    <Share2 size={15} /> Facebook
+                  </a>
+                  <a href="#" className="bg-red-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-red-700 active:scale-95 transition-all duration-200 flex items-center gap-2">
+                    <Video size={15} /> YouTube
+                  </a>
                 </div>
               </div>
             </div>
@@ -209,16 +150,18 @@ export default function Give() {
             {sent ? (
               <div className="flex flex-col items-center justify-center text-center py-12">
                 <CheckCircle size={52} className="text-green-500 mb-4" />
-                <h3 className="text-xl font-bold text-navy-700 mb-2">Message Sent!</h3>
-                <p className="text-gray-600 mb-6">Thank you for reaching out. We will get back to you soon.</p>
-                <button onClick={() => setSent(false)} className="text-gold-600 font-semibold hover:underline text-sm">Send another message</button>
+                <h3 className="text-xl font-bold text-navy-700 mb-2">Opening Email Client…</h3>
+                <p className="text-gray-600 mb-6">Your default email app should open with your message pre-filled.</p>
+                <button onClick={() => setSent(false)} className="text-gold-600 font-semibold hover:underline text-sm">
+                  Send another message
+                </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 {[
-                  { label: "Your Name", field: "name", type: "text", placeholder: "John Smith" },
-                  { label: "Email Address", field: "email", type: "email", placeholder: "john@example.com" },
-                  { label: "Subject", field: "subject", type: "text", placeholder: "How can we help?" },
+                  { label: "Your Name",      field: "name",    type: "text",  placeholder: "John Smith"            },
+                  { label: "Email Address",  field: "email",   type: "email", placeholder: "john@example.com"      },
+                  { label: "Subject",        field: "subject", type: "text",  placeholder: "How can we help?"      },
                 ].map(({ label, field, type, placeholder }) => (
                   <div key={field}>
                     <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
@@ -234,11 +177,20 @@ export default function Give() {
                 ))}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-                  <textarea rows={5} value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} required placeholder="Your message..." className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-navy-500 text-sm resize-none transition-all duration-200" />
+                  <textarea
+                    rows={5}
+                    value={form.message}
+                    onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
+                    required
+                    placeholder="Your message…"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-navy-500 text-sm resize-none transition-all duration-200"
+                  />
                 </div>
-                {error && <p className="text-red-600 text-sm">{error}</p>}
-                <button type="submit" disabled={sending} className="w-full bg-navy-700 text-white font-semibold py-3 rounded-xl hover:bg-navy-600 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm">
-                  {sending ? "Sending…" : "Send Message"}
+                <button
+                  type="submit"
+                  className="w-full bg-navy-700 text-white font-semibold py-3 rounded-xl hover:bg-navy-600 active:scale-95 transition-all duration-200 text-sm"
+                >
+                  Send Message
                 </button>
               </form>
             )}

@@ -1,88 +1,38 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Music, BookOpen, Users, Globe, ChevronRight, Mic, Calendar, LucideIcon, Cross, Heart, Flame, Star, Handshake } from "lucide-react";
+import { Music, BookOpen, Users, Globe, ChevronRight, Mic, Calendar, Cross, Heart, Flame, Star, Handshake, LucideIcon } from "lucide-react";
 import HeroSlider from "@/components/HeroSlider";
-import { generateClient } from "aws-amplify/data";
-import type { Schema } from "@/amplify/data/resource";
-
-const client = generateClient<Schema>();
-type ChurchHighlight = Schema["ChurchHighlight"]["type"];
-type ServiceTime     = Schema["ServiceTime"]["type"];
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Music, BookOpen, Users, Globe, Cross, Heart, Flame, Star, Handshake,
 };
 
-const staticHighlights: ChurchHighlight[] = [
-  { id: "h1", title: "Worship",   desc: "Spirit-filled worship services every Sunday",       icon: "Music",    order: 1, published: true, createdAt: "", updatedAt: "" },
-  { id: "h2", title: "The Word",  desc: "Sound biblical teaching rooted in Scripture",       icon: "BookOpen", order: 2, published: true, createdAt: "", updatedAt: "" },
-  { id: "h3", title: "Community", desc: "A loving family where everyone belongs",            icon: "Users",    order: 3, published: true, createdAt: "", updatedAt: "" },
-  { id: "h4", title: "Outreach",  desc: "Serving our community with the love of Christ",    icon: "Globe",    order: 4, published: true, createdAt: "", updatedAt: "" },
-] as ChurchHighlight[];
+const highlights = [
+  { id: "h1", title: "Worship",   desc: "Spirit-filled worship services every Sunday",       icon: "Music"    },
+  { id: "h2", title: "The Word",  desc: "Sound biblical teaching rooted in Scripture",       icon: "BookOpen" },
+  { id: "h3", title: "Community", desc: "A loving family where everyone belongs",            icon: "Users"    },
+  { id: "h4", title: "Outreach",  desc: "Serving our community with the love of Christ",    icon: "Globe"    },
+];
 
-const staticSchedule: ServiceTime[] = [
-  { id: "ss1", day: "Sunday",    time: "9:00 AM", name: "Morning Service", order: 1, published: true, createdAt: "", updatedAt: "" },
-  { id: "ss2", day: "Sunday",    time: "6:00 PM", name: "Evening Service", order: 2, published: true, createdAt: "", updatedAt: "" },
-  { id: "ss3", day: "Wednesday", time: "7:00 PM", name: "Bible Study",     order: 3, published: true, createdAt: "", updatedAt: "" },
-  { id: "ss4", day: "Friday",    time: "7:00 PM", name: "Prayer Meeting",  order: 4, published: true, createdAt: "", updatedAt: "" },
-] as ServiceTime[];
+const schedule = [
+  { id: "ss1", day: "Sunday",    time: "9:00 AM", name: "Morning Service"  },
+  { id: "ss2", day: "Sunday",    time: "6:00 PM", name: "Evening Service"  },
+  { id: "ss3", day: "Wednesday", time: "7:00 PM", name: "Bible Study"      },
+  { id: "ss4", day: "Friday",    time: "7:00 PM", name: "Prayer Meeting"   },
+];
 
-const fallbackSermons = [
-  { id: "f1", title: "Walking in Faith",    speaker: "Pastor John Kami", date: "May 25, 2026", scripture: "Hebrews 11:1" },
-  { id: "f2", title: "The Power of Prayer", speaker: "Elder Mary Tora",  date: "May 18, 2026", scripture: "James 5:16" },
+const sermons = [
+  { id: "f1", title: "Walking in Faith",    speaker: "Pastor John Kami", date: "May 25, 2026", scripture: "Hebrews 11:1"  },
+  { id: "f2", title: "The Power of Prayer", speaker: "Elder Mary Tora",  date: "May 18, 2026", scripture: "James 5:16"    },
   { id: "f3", title: "Love One Another",    speaker: "Pastor John Kami", date: "May 11, 2026", scripture: "John 13:34–35" },
 ];
 
-const fallbackEvents = [
+const events = [
   { id: "e1", day: "8",  month: "Jun", title: "Youth Camp 2026",    description: "Annual youth retreat for ages 13–25",   time: "All Day"  },
   { id: "e2", day: "15", month: "Jun", title: "Community Outreach", description: "Serving meals at the community centre", time: "10:00 AM" },
   { id: "e3", day: "22", month: "Jun", title: "Church Anniversary", description: "Celebrating our church's founding",      time: "9:00 AM"  },
 ];
 
-type SermonRow = { id: string; title: string; speaker: string; date: string; scripture: string };
-type EventRow  = { id: string; day: string; month: string; title: string; description: string; time: string };
-
 export default function Home() {
-  const [sermons,    setSermons]    = useState<SermonRow[]>(fallbackSermons);
-  const [events,     setEvents]     = useState<EventRow[]>(fallbackEvents);
-  const [highlights, setHighlights] = useState<ChurchHighlight[]>(staticHighlights);
-  const [schedule,   setSchedule]   = useState<ServiceTime[]>(staticSchedule);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const [sermonsRes, eventsRes, hlRes, svRes] = await Promise.all([
-          client.models.Sermon.list(),
-          client.models.Event.list(),
-          client.models.ChurchHighlight.list(),
-          client.models.ServiceTime.list(),
-        ]);
-
-        const published = sermonsRes.data
-          .filter((s) => s.published !== false)
-          .sort((a, b) => b.date.localeCompare(a.date))
-          .slice(0, 3)
-          .map((s) => ({ id: s.id, title: s.title, speaker: s.speaker, date: s.date, scripture: s.scripture }));
-        if (published.length > 0) setSermons(published);
-
-        const publishedEvents = eventsRes.data
-          .filter((e) => e.published !== false)
-          .slice(0, 3)
-          .map((e) => ({ id: e.id, day: e.day, month: e.month, title: e.title, description: e.description, time: e.time }));
-        if (publishedEvents.length > 0) setEvents(publishedEvents);
-
-        const pubHL = hlRes.data.filter((h) => h.published !== false).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-        if (pubHL.length > 0) setHighlights(pubHL);
-
-        const pubSv = svRes.data.filter((s) => s.published !== false).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-        if (pubSv.length > 0) setSchedule(pubSv);
-      } catch { /* keep static fallbacks */ }
-    }
-    load();
-  }, []);
-
   return (
     <div>
       <HeroSlider />

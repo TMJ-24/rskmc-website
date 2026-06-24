@@ -1,28 +1,20 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { generateClient } from "aws-amplify/data";
-import type { Schema } from "@/amplify/data/resource";
 import { Music, Heart, BookOpen, Handshake, Users, Baby, Globe } from "lucide-react";
 import Breadcrumb from "@/components/Breadcrumb";
 import Image from "next/image";
 import Link from "next/link";
 
-const client = generateClient<Schema>();
-type ServiceTime = Schema["ServiceTime"]["type"];
-
-const staticSchedule = [
-  { id: "1", day: "Sunday", time: "9:00 AM", name: "Morning Worship Service", duration: "~90 min", description: "Our main Sunday service with praise and worship, prayer, and the preaching of God's Word. Children's church runs concurrently.", order: 1, published: true },
-  { id: "2", day: "Sunday", time: "6:00 PM", name: "Evening Service", duration: "~60 min", description: "A reflective evening gathering with song, prayer, and a short devotional.", order: 2, published: true },
-  { id: "3", day: "Wednesday", time: "7:00 PM", name: "Midweek Bible Study", duration: "~75 min", description: "In-depth study of the Scriptures for spiritual growth and understanding of God's Word.", order: 3, published: true },
-  { id: "4", day: "Friday", time: "7:00 PM", name: "Prayer and Worship Night", duration: "~60 min", description: "A dedicated time of corporate prayer, intercession, and worship for the church and community.", order: 4, published: true },
+const schedule = [
+  { id: "1", day: "Sunday",    time: "9:00 AM",  name: "Morning Worship Service",   duration: "~90 min", description: "Our main Sunday service with praise and worship, prayer, and the preaching of God's Word. Children's church runs concurrently." },
+  { id: "2", day: "Sunday",    time: "6:00 PM",  name: "Evening Service",            duration: "~60 min", description: "A reflective evening gathering with song, prayer, and a short devotional." },
+  { id: "3", day: "Wednesday", time: "7:00 PM",  name: "Midweek Bible Study",        duration: "~75 min", description: "In-depth study of the Scriptures for spiritual growth and understanding of God's Word." },
+  { id: "4", day: "Friday",    time: "7:00 PM",  name: "Prayer and Worship Night",   duration: "~60 min", description: "A dedicated time of corporate prayer, intercession, and worship for the church and community." },
 ];
 
 const expectSteps = [
-  { Icon: Music, title: "Worship", desc: "Spirit-led praise to open hearts" },
-  { Icon: Heart, title: "Prayer", desc: "Corporate prayer and thanksgiving" },
-  { Icon: BookOpen, title: "The Word", desc: "Sound, practical biblical preaching" },
-  { Icon: Handshake, title: "Fellowship", desc: "Connection with your church family" },
+  { Icon: Music,     title: "Worship",     desc: "Spirit-led praise to open hearts" },
+  { Icon: Heart,     title: "Prayer",      desc: "Corporate prayer and thanksgiving" },
+  { Icon: BookOpen,  title: "The Word",    desc: "Sound, practical biblical preaching" },
+  { Icon: Handshake, title: "Fellowship",  desc: "Connection with your church family" },
 ];
 
 const DAY_ORDER = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -32,30 +24,8 @@ const DAY_ABBR: Record<string, string> = {
 };
 
 export default function Services() {
-  const [services, setServices] = useState<ServiceTime[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const res = await client.models.ServiceTime.list();
-        const published = res.data.filter((s) => s.published !== false);
-        setServices(
-          published.length > 0
-            ? [...published].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-            : (staticSchedule as unknown as ServiceTime[])
-        );
-      } catch {
-        setServices(staticSchedule as unknown as ServiceTime[]);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, []);
-
-  const grouped = DAY_ORDER.reduce<Record<string, ServiceTime[]>>((acc, day) => {
-    const dayServices = services.filter((s) => s.day === day);
+  const grouped = DAY_ORDER.reduce<Record<string, typeof schedule>>((acc, day) => {
+    const dayServices = schedule.filter((s) => s.day === day);
     if (dayServices.length > 0) acc[day] = dayServices;
     return acc;
   }, {});
@@ -81,43 +51,34 @@ export default function Services() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="eyebrow text-gold-600 mb-3">Gather With Us</p>
           <h2 className="text-3xl font-bold text-navy-700 mb-12">Weekly Schedule</h2>
-          {loading ? (
-            <div className="text-center text-gray-400 py-10">Loading schedule...</div>
-          ) : (
-            <div className="space-y-10">
-              {Object.entries(grouped).map(([day, dayServices]) => (
-                <div key={day}>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-gold-500 text-navy-800 font-bold rounded-lg flex items-center justify-center text-xs uppercase tracking-wide shrink-0">
-                      {DAY_ABBR[day] ?? day.slice(0, 3).toUpperCase()}
-                    </div>
-                    <h3 className="text-xl font-bold text-navy-700">{day}</h3>
+          <div className="space-y-10">
+            {Object.entries(grouped).map(([day, dayServices]) => (
+              <div key={day}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-gold-500 text-navy-800 font-bold rounded-lg flex items-center justify-center text-xs uppercase tracking-wide shrink-0">
+                    {DAY_ABBR[day] ?? day.slice(0, 3).toUpperCase()}
                   </div>
-                  <div className="grid gap-4 sm:pl-16">
-                    {dayServices.map((svc) => (
-                      <div
-                        key={svc.id}
-                        className="bg-white border border-gray-100 rounded-xl p-5"
-                      >
-                        <div className="flex items-start justify-between flex-wrap gap-3">
-                          <div>
-                            <h4 className="font-bold text-navy-700 text-lg">{svc.name}</h4>
-                            {svc.description && (
-                              <p className="text-gray-600 text-sm mt-1 max-w-lg">{svc.description}</p>
-                            )}
-                          </div>
-                          <div className="text-right shrink-0">
-                            <p className="text-gold-600 font-bold text-lg">{svc.time}</p>
-                            {svc.duration && <p className="text-gray-400 text-xs">{svc.duration}</p>}
-                          </div>
+                  <h3 className="text-xl font-bold text-navy-700">{day}</h3>
+                </div>
+                <div className="grid gap-4 sm:pl-16">
+                  {dayServices.map((svc) => (
+                    <div key={svc.id} className="bg-white border border-gray-100 rounded-xl p-5">
+                      <div className="flex items-start justify-between flex-wrap gap-3">
+                        <div>
+                          <h4 className="font-bold text-navy-700 text-lg">{svc.name}</h4>
+                          <p className="text-gray-600 text-sm mt-1 max-w-lg">{svc.description}</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-gold-600 font-bold text-lg">{svc.time}</p>
+                          <p className="text-gray-400 text-xs">{svc.duration}</p>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -128,10 +89,7 @@ export default function Services() {
           <h2 className="text-3xl font-bold mb-12">What to Expect</h2>
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {expectSteps.map(({ Icon, title, desc }, i) => (
-              <div
-                key={i}
-                className="bg-navy-600 rounded-xl p-6"
-              >
+              <div key={i} className="bg-navy-600 rounded-xl p-6">
                 <div className="w-12 h-12 bg-navy-700 text-gold-400 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Icon size={22} />
                 </div>
@@ -153,17 +111,14 @@ export default function Services() {
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { Icon: Baby, name: "Sunday School", desc: "Faith-filled classes for children every Sunday during the morning service. Ages 3–12." },
-              { Icon: Users, name: "Youth Ministry", desc: "Discipleship and fellowship for teens and young adults. Meets Fridays at 6:00 PM." },
-              { Icon: Users, name: "Women's Ministry", desc: "Empowering women through Bible study, prayer, and sisterhood. Monthly gatherings." },
-              { Icon: Users, name: "Men's Ministry", desc: "Building Godly men through fellowship, accountability, and service. Monthly breakfast." },
-              { Icon: Globe, name: "Outreach Ministry", desc: "Serving the local community with food, care, and the Gospel every month." },
-              { Icon: Music, name: "Praise & Worship", desc: "Skilled musicians and singers leading the congregation in Spirit-filled worship every service." },
+              { Icon: Baby,   name: "Sunday School",    desc: "Faith-filled classes for children every Sunday during the morning service. Ages 3–12." },
+              { Icon: Users,  name: "Youth Ministry",   desc: "Discipleship and fellowship for teens and young adults. Meets Fridays at 6:00 PM." },
+              { Icon: Users,  name: "Women's Ministry", desc: "Empowering women through Bible study, prayer, and sisterhood. Monthly gatherings." },
+              { Icon: Users,  name: "Men's Ministry",   desc: "Building Godly men through fellowship, accountability, and service. Monthly breakfast." },
+              { Icon: Globe,  name: "Outreach Ministry",desc: "Serving the local community with food, care, and the Gospel every month." },
+              { Icon: Music,  name: "Praise & Worship", desc: "Skilled musicians and singers leading the congregation in Spirit-filled worship every service." },
             ].map(({ Icon, name, desc }, i) => (
-              <div
-                key={i}
-                className="bg-white border border-gray-100 rounded-xl p-6"
-              >
+              <div key={i} className="bg-white border border-gray-100 rounded-xl p-6">
                 <div className="w-10 h-10 bg-navy-700 text-gold-400 rounded-lg flex items-center justify-center mb-4">
                   <Icon size={18} />
                 </div>

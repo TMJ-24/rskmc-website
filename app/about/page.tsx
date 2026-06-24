@@ -1,36 +1,27 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { generateClient } from "aws-amplify/data";
-import type { Schema } from "@/amplify/data/resource";
 import { Eye, Target, Cross, BookOpen, Heart, Users, Globe, Music, LucideIcon } from "lucide-react";
 import Breadcrumb from "@/components/Breadcrumb";
 import Image from "next/image";
-
-const client = generateClient<Schema>();
-type Leader    = Schema["Leader"]["type"];
-type CoreValue = Schema["CoreValue"]["type"];
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Cross, BookOpen, Heart, Users, Globe, Music, Eye, Target,
 };
 
-const staticCoreValues: CoreValue[] = [
-  { id: "cv1", title: "Christ-Centered", desc: "Jesus is at the centre of everything we do",                      icon: "Cross",    order: 1, published: true, createdAt: "", updatedAt: "" },
-  { id: "cv2", title: "Scripture",        desc: "The Bible is our final authority for faith and practice",          icon: "BookOpen", order: 2, published: true, createdAt: "", updatedAt: "" },
-  { id: "cv3", title: "Prayer",           desc: "We are a house of prayer, fully dependent on God",                icon: "Heart",    order: 3, published: true, createdAt: "", updatedAt: "" },
-  { id: "cv4", title: "Fellowship",       desc: "We grow together in authentic community",                          icon: "Users",    order: 4, published: true, createdAt: "", updatedAt: "" },
-  { id: "cv5", title: "Service",          desc: "We serve others as an expression of our faith",                   icon: "Globe",    order: 5, published: true, createdAt: "", updatedAt: "" },
-  { id: "cv6", title: "Worship",          desc: "Worship is our first priority and highest calling",               icon: "Music",    order: 6, published: true, createdAt: "", updatedAt: "" },
-] as CoreValue[];
+const coreValues = [
+  { id: "cv1", title: "Christ-Centered", desc: "Jesus is at the centre of everything we do",               icon: "Cross"    },
+  { id: "cv2", title: "Scripture",        desc: "The Bible is our final authority for faith and practice",  icon: "BookOpen" },
+  { id: "cv3", title: "Prayer",           desc: "We are a house of prayer, fully dependent on God",         icon: "Heart"    },
+  { id: "cv4", title: "Fellowship",       desc: "We grow together in authentic community",                  icon: "Users"    },
+  { id: "cv5", title: "Service",          desc: "We serve others as an expression of our faith",            icon: "Globe"    },
+  { id: "cv6", title: "Worship",          desc: "Worship is our first priority and highest calling",        icon: "Music"    },
+];
 
-const staticLeaders = [
-  { id: "1", name: "Rev Nathan Manag",   role: "Senior Pastor",    bio: null, imageUrl: null, order: 1, published: true },
-  { id: "2", name: "Beama Wape",         role: "Chairman",         bio: null, imageUrl: null, order: 2, published: true },
-  { id: "3", name: "Deaconess Mary Tora",role: "Women's Ministry", bio: null, imageUrl: null, order: 3, published: true },
-  { id: "4", name: "Deacon Peter Rosi",  role: "Outreach Ministry",bio: null, imageUrl: null, order: 4, published: true },
-  { id: "5", name: "Sis. Grace Kami",    role: "Youth Ministry",   bio: null, imageUrl: null, order: 5, published: true },
-  { id: "6", name: "Bro. David Lewa",    role: "Worship Ministry", bio: null, imageUrl: null, order: 6, published: true },
+const leaders = [
+  { id: "1", name: "Rev Nathan Manag",    role: "Senior Pastor",    imageUrl: null as string | null },
+  { id: "2", name: "Beama Wape",          role: "Chairman",         imageUrl: null },
+  { id: "3", name: "Deaconess Mary Tora", role: "Women's Ministry", imageUrl: null },
+  { id: "4", name: "Deacon Peter Rosi",   role: "Outreach Ministry",imageUrl: null },
+  { id: "5", name: "Sis. Grace Kami",     role: "Youth Ministry",   imageUrl: null },
+  { id: "6", name: "Bro. David Lewa",     role: "Worship Ministry", imageUrl: null },
 ];
 
 function initials(name: string) {
@@ -38,46 +29,12 @@ function initials(name: string) {
 }
 
 export default function About() {
-  const [leaders,    setLeaders]    = useState<Leader[]>([]);
-  const [coreValues, setCoreValues] = useState<CoreValue[]>(staticCoreValues);
-  const [loading,    setLoading]    = useState(true);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const [lRes, cvRes] = await Promise.all([
-          client.models.Leader.list(),
-          client.models.CoreValue.list(),
-        ]);
-        const published = lRes.data.filter((l) => l.published !== false);
-        setLeaders(
-          published.length > 0
-            ? [...published].sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-            : (staticLeaders as unknown as Leader[])
-        );
-        const pubCV = cvRes.data.filter((v) => v.published !== false).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-        if (pubCV.length > 0) setCoreValues(pubCV);
-      } catch {
-        setLeaders(staticLeaders as unknown as Leader[]);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, []);
-
   return (
     <div>
       {/* Hero */}
       <section className="relative bg-navy-700 text-white py-16 md:py-24 overflow-hidden">
         <div className="absolute inset-0">
-          <Image
-            src="https://images.unsplash.com/photo-1438032005730-c779502df39b?w=1920&q=75"
-            alt=""
-            fill
-            className="object-cover opacity-20"
-            priority
-          />
+          <Image src="https://images.unsplash.com/photo-1438032005730-c779502df39b?w=1920&q=75" alt="" fill className="object-cover opacity-20" priority />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumb items={[{ label: "About" }]} />
@@ -186,28 +143,23 @@ export default function About() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="eyebrow text-gold-400 mb-4">The Team</p>
           <h2 className="h-section text-white mb-12">Our Leadership</h2>
-          {loading ? (
-            <div className="text-center text-blue-300">Loading...</div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-              {leaders.map((person) => (
-                <div key={person.id} className="text-center group">
-                  {person.imageUrl ? (
-                    <div className="w-16 h-16 rounded-full mx-auto mb-3 overflow-hidden relative ring-2 ring-white/20 group-hover:ring-gold-500/60 transition-all duration-300">
-                      <Image src={person.imageUrl} alt={person.name} fill className="object-cover" />
-                    </div>
-                  ) : (
-                    <div className="w-16 h-16 bg-gold-500 text-navy-800 rounded-full flex items-center justify-center font-bold text-lg mx-auto mb-3 ring-2 ring-white/20 group-hover:ring-gold-400/70 transition-all duration-300">
-                      {initials(person.name)}
-                    </div>
-                  )}
-                  <h3 className="font-bold text-white text-sm">{person.name}</h3>
-                  <p className="text-blue-300 text-xs mt-1">{person.role}</p>
-                  {person.bio && <p className="text-blue-400 text-xs mt-1 line-clamp-2">{person.bio}</p>}
-                </div>
-              ))}
-            </div>
-          )}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            {leaders.map((person) => (
+              <div key={person.id} className="text-center group">
+                {person.imageUrl ? (
+                  <div className="w-16 h-16 rounded-full mx-auto mb-3 overflow-hidden relative ring-2 ring-white/20 group-hover:ring-gold-500/60 transition-all duration-300">
+                    <Image src={person.imageUrl} alt={person.name} fill className="object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 bg-gold-500 text-navy-800 rounded-full flex items-center justify-center font-bold text-lg mx-auto mb-3 ring-2 ring-white/20 group-hover:ring-gold-400/70 transition-all duration-300">
+                    {initials(person.name)}
+                  </div>
+                )}
+                <h3 className="font-bold text-white text-sm">{person.name}</h3>
+                <p className="text-blue-300 text-xs mt-1">{person.role}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </div>

@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": ".open-next/worker.js",
+  "name": "rskmc-website",
+  "compatibility_date": "2025-08-15",
+  "compatibility_flags": [
+    // Enable Node.js APIs (needed by aws-amplify and next/font)
+    "nodejs_compat",
+    // Allow fetch to public URLs from Workers
+    "global_fetch_strictly_public"
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  }
+}

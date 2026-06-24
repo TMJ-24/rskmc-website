@@ -28,14 +28,9 @@ yarn-error.log*
 # local env files
 .env*.local
 
-# vercel
-.vercel
+# cloudflare / opennext
+.open-next
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# amplify
-.amplify
-amplify_outputs*
-amplifyconfiguration*
